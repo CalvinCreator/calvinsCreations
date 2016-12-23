@@ -5,43 +5,43 @@ filter: Nearest,Nearest
 repeat: none
 options
   rotate: false
-  xy: 1, 96
+  xy: 1, 83
   size: 350, 350
   orig: 350, 350
   offset: 0, 0
   index: -1
 optionsGray
   rotate: false
-  xy: 353, 96
+  xy: 353, 83
   size: 350, 350
   orig: 350, 350
   offset: 0, 0
   index: -1
-newGameLight
-  rotate: false
-  xy: 1, 1
-  size: 444, 93
-  orig: 444, 93
-  offset: 0, 0
-  index: -1
 newGame
   rotate: false
-  xy: 447, 14
+  xy: 1, 1
   size: 380, 80
   orig: 380, 80
   offset: 0, 0
   index: -1
-quitLight
+newGameLight
   rotate: false
-  xy: 705, 348
-  size: 200, 98
-  orig: 200, 98
+  xy: 383, 3
+  size: 379, 78
+  orig: 379, 78
   offset: 0, 0
   index: -1
 quit
   rotate: false
-  xy: 705, 261
+  xy: 705, 348
   size: 172, 85
   orig: 172, 85
+  offset: 0, 0
+  index: -1
+quitLight
+  rotate: false
+  xy: 705, 260
+  size: 171, 86
+  orig: 171, 86
   offset: 0, 0
   index: -1
