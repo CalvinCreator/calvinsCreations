@@ -1,0 +1,47 @@
+
+menuAssets.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+options
+  rotate: false
+  xy: 1, 83
+  size: 350, 350
+  orig: 350, 350
+  offset: 0, 0
+  index: -1
+optionsGray
+  rotate: false
+  xy: 353, 83
+  size: 350, 350
+  orig: 350, 350
+  offset: 0, 0
+  index: -1
+newGame
+  rotate: false
+  xy: 1, 1
+  size: 380, 80
+  orig: 380, 80
+  offset: 0, 0
+  index: -1
+newGameLight
+  rotate: false
+  xy: 383, 1
+  size: 380, 80
+  orig: 380, 80
+  offset: 0, 0
+  index: -1
+quit
+  rotate: false
+  xy: 705, 348
+  size: 172, 85
+  orig: 172, 85
+  offset: 0, 0
+  index: -1
+quitLight
+  rotate: false
+  xy: 705, 261
+  size: 172, 85
+  orig: 172, 85
+  offset: 0, 0
+  index: -1

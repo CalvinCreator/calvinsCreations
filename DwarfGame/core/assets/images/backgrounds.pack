@@ -1,0 +1,40 @@
+
+backgrounds.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+closeMountains
+  rotate: false
+  xy: 1, 325
+  size: 544, 160
+  orig: 544, 160
+  offset: 0, 0
+  index: -1
+closeTrees
+  rotate: false
+  xy: 1, 163
+  size: 544, 160
+  orig: 544, 160
+  offset: 0, 0
+  index: -1
+farTrees
+  rotate: false
+  xy: 1, 1
+  size: 544, 160
+  orig: 544, 160
+  offset: 0, 0
+  index: -1
+bg
+  rotate: false
+  xy: 547, 325
+  size: 272, 160
+  orig: 272, 160
+  offset: 0, 0
+  index: -1
+farMountain
+  rotate: false
+  xy: 547, 163
+  size: 272, 160
+  orig: 272, 160
+  offset: 0, 0
+  index: -1

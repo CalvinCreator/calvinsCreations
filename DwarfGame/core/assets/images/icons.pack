@@ -1,0 +1,355 @@
+
+icons.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+gate1
+  rotate: false
+  xy: 1, 57
+  size: 74, 64
+  orig: 74, 64
+  offset: 0, 0
+  index: -1
+gate2
+  rotate: false
+  xy: 77, 57
+  size: 74, 64
+  orig: 74, 64
+  offset: 0, 0
+  index: -1
+gate3
+  rotate: false
+  xy: 153, 57
+  size: 74, 64
+  orig: 74, 64
+  offset: 0, 0
+  index: -1
+gate4
+  rotate: false
+  xy: 229, 57
+  size: 74, 64
+  orig: 74, 64
+  offset: 0, 0
+  index: -1
+emptyHeart
+  rotate: false
+  xy: 1, 37
+  size: 21, 18
+  orig: 21, 18
+  offset: 0, 0
+  index: -1
+fullHeart
+  rotate: false
+  xy: 305, 103
+  size: 21, 18
+  orig: 21, 18
+  offset: 0, 0
+  index: -1
+axe1
+  rotate: false
+  xy: 1, 19
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+axe2
+  rotate: false
+  xy: 24, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+axe3
+  rotate: false
+  xy: 305, 85
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+axe4
+  rotate: false
+  xy: 328, 105
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+mace1
+  rotate: false
+  xy: 1, 1
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+mace2
+  rotate: false
+  xy: 42, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+spear
+  rotate: false
+  xy: 305, 67
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword1
+  rotate: false
+  xy: 346, 105
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword10
+  rotate: false
+  xy: 60, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword11
+  rotate: false
+  xy: 364, 105
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword12
+  rotate: false
+  xy: 78, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword13
+  rotate: false
+  xy: 382, 105
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword14
+  rotate: false
+  xy: 96, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword16
+  rotate: false
+  xy: 400, 105
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword2
+  rotate: false
+  xy: 114, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword3
+  rotate: false
+  xy: 418, 105
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword4
+  rotate: false
+  xy: 132, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword5
+  rotate: false
+  xy: 436, 105
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword6
+  rotate: false
+  xy: 150, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword7
+  rotate: false
+  xy: 454, 105
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword8
+  rotate: false
+  xy: 168, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+sword9
+  rotate: false
+  xy: 472, 105
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wand1
+  rotate: false
+  xy: 186, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wand2
+  rotate: false
+  xy: 490, 105
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wand3
+  rotate: false
+  xy: 204, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+warhammer1
+  rotate: false
+  xy: 222, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+warhammer2
+  rotate: false
+  xy: 240, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+warhammer3
+  rotate: false
+  xy: 258, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+warhammer4
+  rotate: false
+  xy: 276, 39
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+axe5
+  rotate: false
+  xy: 305, 54
+  size: 16, 11
+  orig: 16, 11
+  offset: 0, 0
+  index: -1
+blackBar
+  rotate: false
+  xy: 294, 39
+  size: 15, 13
+  orig: 15, 13
+  offset: 0, 0
+  index: -1
+amethyst
+  rotate: false
+  xy: 311, 39
+  size: 13, 13
+  orig: 13, 13
+  offset: 0, 0
+  index: -1
+saphire
+  rotate: false
+  xy: 19, 21
+  size: 11, 14
+  orig: 11, 14
+  offset: 0, 0
+  index: -1
+blueBar
+  rotate: false
+  xy: 32, 24
+  size: 15, 13
+  orig: 15, 13
+  offset: 0, 0
+  index: -1
+copperBar
+  rotate: false
+  xy: 49, 24
+  size: 15, 13
+  orig: 15, 13
+  offset: 0, 0
+  index: -1
+diamond
+  rotate: false
+  xy: 66, 24
+  size: 15, 13
+  orig: 15, 13
+  offset: 0, 0
+  index: -1
+greenBar
+  rotate: false
+  xy: 83, 24
+  size: 15, 13
+  orig: 15, 13
+  offset: 0, 0
+  index: -1
+platinumBar
+  rotate: false
+  xy: 100, 24
+  size: 15, 13
+  orig: 15, 13
+  offset: 0, 0
+  index: -1
+silverBar
+  rotate: false
+  xy: 117, 24
+  size: 15, 13
+  orig: 15, 13
+  offset: 0, 0
+  index: -1
+emerald
+  rotate: false
+  xy: 134, 24
+  size: 14, 13
+  orig: 14, 13
+  offset: 0, 0
+  index: -1
+redCoin
+  rotate: false
+  xy: 150, 24
+  size: 14, 13
+  orig: 14, 13
+  offset: 0, 0
+  index: -1
+ruby
+  rotate: false
+  xy: 166, 24
+  size: 14, 13
+  orig: 14, 13
+  offset: 0, 0
+  index: -1
+blackDagger
+  rotate: false
+  xy: 182, 24
+  size: 13, 13
+  orig: 13, 13
+  offset: 0, 0
+  index: -1
+shortSword
+  rotate: false
+  xy: 197, 24
+  size: 13, 13
+  orig: 13, 13
+  offset: 0, 0
+  index: -1
