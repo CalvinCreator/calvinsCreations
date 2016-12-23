@@ -8,11 +8,4 @@
 	</buildSpec>
 	<natures>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>DwarfGame</name>
-			<type>2</type>
-			<locationURI>PARENT-4-PROJECT_LOC/libgdx/codeSmith/libGDX/DwarfGame</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
