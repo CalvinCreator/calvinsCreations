@@ -27,6 +27,7 @@ public class World {
 	private ArrayList<ParticleAnimation> pAnimations;
 	private ArrayList<Gate> gates;
 	private Renderer renderer;
+	private String currentMap = "";
 
 	public World() {
 		player = new Player(this);
@@ -37,7 +38,9 @@ public class World {
 	}
 
 	public void update(float deltaTime) {
-
+		
+		if(player.getHealth() <= 0) 
+			setMap(currentMap);
 		// Update Particle Animations
 		for (int i = 0; i < pAnimations.size(); i++)
 			if (!pAnimations.get(i).update(deltaTime))
@@ -94,6 +97,7 @@ public class World {
 	}
 
 	public void setMap(String mapPath) {
+		currentMap = mapPath;
 		if (map != null)
 			map.dispose();
 		map = new TmxMapLoader().load(mapPath);
@@ -103,7 +107,7 @@ public class World {
 		
 		player = new Player(this);
 		player.setPosition(Float.valueOf((String)map.getProperties().get("spawnX")), Float.valueOf((String)map.getProperties().get("spawnY")));
-
+		
 		if (map.getLayers().get("Mobs") != null) {
 			TiledMapTileLayer tileLayer = (TiledMapTileLayer) map.getLayers().get("Mobs");
 			for (int x = 0; x < tileLayer.getWidth(); x++)
