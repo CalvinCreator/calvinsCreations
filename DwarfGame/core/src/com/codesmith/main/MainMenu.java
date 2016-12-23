@@ -1,46 +1,57 @@
 package com.codesmith.main;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.codesmith.graphics.Assets;
-import com.codesmith.utils.MyActor;
-import com.badlogic.gdx.Game;
+import com.codesmith.ui.Menuable;
+import com.codesmith.ui.MyActor;
+import com.codesmith.ui.OptionsWindow;
+import com.codesmith.ui.Skins;
+import com.codesmith.utils.GamePreferences;
 
-public class MainMenu extends CScreen {
+public class MainMenu extends CScreen implements Menuable {
 
 	private Stage stage;
 	private Skin skin;
 
+	private OptionsWindow optionsWindow;
+	
 	private Actor closeMountains, closeTrees, farMountains, farTrees, bg;
+	
+	private BitmapFont defaultFont;
+	
+	private TextButton options, newGameButton, quit;
 
 	public MainMenu() {
+		
 	}
 
 	@Override
 	public void show() {
 		Assets.instance.songs.trackOne.setLooping(true);
 		Assets.instance.songs.trackOne.play();
-		Assets.instance.songs.trackOne.setVolume(0.2f);
+		int i = GamePreferences.instance.music ? 1 : 0;
+		Assets.instance.songs.trackOne.setVolume(i * GamePreferences.instance.volMusic);
 
 		stage = new Stage();
+		stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
 		// Initialise skin
 		createBasicSkin();
+		
+		
+		optionsWindow = new OptionsWindow(Skins.optionsSkin, this);
 
-		TextButton newGameButton = new TextButton("", skin.get("newGameStyle", TextButton.TextButtonStyle.class)); // Use
-																													// the
-																													// initialised
-																													// skin
+		newGameButton = new TextButton("", skin.get("newGameStyle", TextButton.TextButtonStyle.class)); 
+		
 		newGameButton.addListener(new ChangeListener() {
 			public void changed(ChangeEvent event, Actor actor) {
 				Assets.instance.songs.trackOne.stop();
@@ -51,7 +62,7 @@ public class MainMenu extends CScreen {
 				Gdx.graphics.getHeight() * 0.6f - newGameButton.getHeight() / 2);
 		stage.addActor(newGameButton);
 
-		TextButton quit = new TextButton("", skin.get("quitStyle", TextButton.TextButtonStyle.class));
+		quit = new TextButton("", skin.get("quitStyle", TextButton.TextButtonStyle.class));
 		quit.addListener(new ChangeListener() {
 			public void changed(ChangeEvent event, Actor actor) {
 				Gdx.app.exit();
@@ -61,10 +72,13 @@ public class MainMenu extends CScreen {
 				Gdx.graphics.getHeight() * 0.4f - quit.getHeight() / 2);
 		stage.addActor(quit);
 
-		TextButton options = new TextButton("", skin.get("options", TextButton.TextButtonStyle.class));
+		options = new TextButton("", skin.get("options", TextButton.TextButtonStyle.class));
 		options.addListener(new ChangeListener() {
 			public void changed(ChangeEvent event, Actor actor) {
-
+				options.setVisible(false);
+				newGameButton.setVisible(false);
+				quit.setVisible(false);
+				optionsWindow.onOpening();
 			}
 		});
 		options.setSize(100, 100);
@@ -73,18 +87,19 @@ public class MainMenu extends CScreen {
 
 		closeMountains = new MyActor(Assets.instance.backgrounds.findRegion("closeMountains"), 12, 2f);
 		farMountains = new MyActor(Assets.instance.backgrounds.findRegion("farMountain"), 4, 1);
-		farTrees = new MyActor(Assets.instance.backgrounds.findRegion("farTrees"), 32, 1.3f);
-		closeTrees = new MyActor(Assets.instance.backgrounds.findRegion("closeTrees"), 48, 1.3f);
+		farTrees = new MyActor(Assets.instance.backgrounds.findRegion("farTrees"), 39, 1.3f);
+		closeTrees = new MyActor(Assets.instance.backgrounds.findRegion("closeTrees"), 58, 1.3f);
 		bg = new MyActor(Assets.instance.backgrounds.findRegion("bg"), 0, 1);
 
+		stage.addActor(optionsWindow);
 	}
 
 	private void createBasicSkin() {
 		// Create a font
-		BitmapFont font = new BitmapFont(Gdx.files.internal("fonts/largeFont.fnt"));
+		defaultFont = new BitmapFont(Gdx.files.internal("fonts/largeFont.fnt"));
 
 		skin = new Skin();
-		skin.add("default", font);
+		skin.add("default", defaultFont);
 		skin.addRegions(Assets.instance.menuAssets);
 
 		// Create a button style
@@ -106,14 +121,16 @@ public class MainMenu extends CScreen {
 		optionStyle.up = skin.getDrawable("options");
 		optionStyle.down = skin.getDrawable("options");
 		optionStyle.over = skin.getDrawable("optionsGray");
-		optionStyle.font = font;
+		optionStyle.font = defaultFont;
 		skin.add("options", optionStyle);
 	}
-
+	
+	
+	
 	@Override
 	public void render(float delta) {
+		stage.getBatch().setColor(1, 1, 1, 1);
 		stage.getBatch().begin();
-		
 		bg.act(delta);
 		bg.draw(stage.getBatch(), 1);
 		
@@ -134,20 +151,18 @@ public class MainMenu extends CScreen {
 		stage.act(delta);
 		stage.draw();
 	}
+	
+	public void onClose(Window window) {
+		newGameButton.setVisible(true);
+		options.setVisible(true);
+		quit.setVisible(true);
+	}
+	
+	
 
 	@Override
 	public void resize(int width, int height) {
-		stage.getViewport().setScreenSize(width, height);
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void resume() {
-
+		stage.getViewport().update(width, height, true);
 	}
 
 	@Override
@@ -164,8 +179,12 @@ public class MainMenu extends CScreen {
 	@Override
 	public boolean keyUp(int keycode) {
 		stage.keyUp(keycode);
-		if (keycode == Keys.ESCAPE)
-			Gdx.app.exit();
+		if (keycode == Keys.ESCAPE) {
+			if(optionsWindow.isVisible())
+				optionsWindow.onCancelClicked();
+			else
+				Gdx.app.exit();
+		}
 		return false;
 	}
 

@@ -13,4 +13,8 @@ public abstract class CScreen implements Screen {
 	public boolean mouseMoved(int screenX, int screenY){return false;}
 	public boolean scrolled(int amount){return false;}
 
+	@Override
+	public void pause() {}
+	@Override
+	public void resume() {}
 }

@@ -9,6 +9,10 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.codesmith.graphics.Assets;
+import com.codesmith.ui.Menuable;
+import com.codesmith.ui.OptionsWindow;
+import com.codesmith.ui.Skins;
+import com.codesmith.utils.GamePreferences;
 
 public class MainLoop extends Game implements InputProcessor {
 	public static final String TAG = MainLoop.class.getName();
@@ -16,6 +20,8 @@ public class MainLoop extends Game implements InputProcessor {
 	@Override
 	public void create () {
 		Assets.instance.init(new AssetManager());
+		GamePreferences.instance.load();
+		Skins.createSkins();
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		setScreen(new MainMenu());
 		Gdx.input.setInputProcessor(this);
@@ -37,6 +43,7 @@ public class MainLoop extends Game implements InputProcessor {
 	public void dispose() {
 		getScreen().dispose();
 		Assets.instance.dispose();
+		Skins.disposeSkins();
 	}
 	
 	@Override

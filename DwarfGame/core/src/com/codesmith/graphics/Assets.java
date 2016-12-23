@@ -1,5 +1,7 @@
 package com.codesmith.graphics;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
@@ -230,6 +232,8 @@ public class Assets implements Disposable, AssetErrorListener {
 	public class Songs {
 		public final Music trackOne, trackTwo;
 		public final Sound swordHit, hit, swoosh;
+		public final ArrayList<Music> allSongs;
+		public final ArrayList<Sound> allSounds;
 		
 		public Songs(Music[] songs) {
 			trackOne = songs[0];
@@ -237,6 +241,15 @@ public class Assets implements Disposable, AssetErrorListener {
 			swordHit = Gdx.audio.newSound(Gdx.files.internal("sounds/swordHit.mp3"));
 			hit  = Gdx.audio.newSound(Gdx.files.internal("sounds/hit.mp3"));
 			swoosh  = Gdx.audio.newSound(Gdx.files.internal("sounds/swoosh.mp3"));
+			
+			allSongs = new ArrayList<Music>();
+			allSongs.add(trackOne);
+			allSongs.add(trackTwo);
+			
+			allSounds = new ArrayList<Sound>();
+			allSounds.add(swordHit);
+			allSounds.add(hit);
+			allSounds.add(swoosh);
 		}
 	}
 

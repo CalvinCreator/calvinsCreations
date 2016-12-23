@@ -12,8 +12,6 @@ public class DesktopLauncher {
 	private static boolean rebuildAtlas = false;
 	private static boolean drawDebugOutline = false;
 	
-	//for david
-	
 	public static void main (String[] arg) {
 		if(rebuildAtlas) {
 			Settings settings = new Settings();
