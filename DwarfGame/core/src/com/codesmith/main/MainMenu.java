@@ -74,7 +74,7 @@ public class MainMenu extends CScreen {
 		closeMountains = new MyActor(Assets.instance.backgrounds.findRegion("closeMountains"), 12, 2f);
 		farMountains = new MyActor(Assets.instance.backgrounds.findRegion("farMountain"), 4, 1);
 		farTrees = new MyActor(Assets.instance.backgrounds.findRegion("farTrees"), 32, 1.3f);
-		closeTrees = new MyActor(Assets.instance.backgrounds.findRegion("closeTrees"), 42, 1.3f);
+		closeTrees = new MyActor(Assets.instance.backgrounds.findRegion("closeTrees"), 48, 1.3f);
 		bg = new MyActor(Assets.instance.backgrounds.findRegion("bg"), 0, 1);
 
 	}

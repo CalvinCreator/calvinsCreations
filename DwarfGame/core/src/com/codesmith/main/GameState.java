@@ -23,7 +23,7 @@ public class GameState extends CScreen {
 		Assets.instance.songs.trackTwo.setVolume(0.05f);
 		Assets.instance.songs.trackTwo.play();
 		world = new World();
-		world.setMap("maps/map2.tmx");
+		world.setMap("maps/map1Map.tmx");
 		camHelper = new CameraHelper();
 		camHelper.setTarget(world.getPlayer());
 		renderer = new Renderer(world, camHelper);
