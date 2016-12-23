@@ -14,6 +14,7 @@ import com.codesmith.graphics.AnimationManager;
 import com.codesmith.graphics.Assets;
 import com.codesmith.graphics.VectorAnimation;
 import com.codesmith.utils.Constants;
+import com.codesmith.utils.GamePreferences;
 
 public class Player extends GameSprite {
 	public static final String TAG = Player.class.getName();
@@ -26,6 +27,8 @@ public class Player extends GameSprite {
 
 	private World world;
 
+	private Vector2 spawnLocation;
+	private String spawnMap;
 	private long lastAttack = 0;
 	private float attackCooldown = 0.3f;
 
@@ -38,7 +41,8 @@ public class Player extends GameSprite {
 
 		this.world = world;
 		maxHealth = health = 4;
-
+		spawnLocation = new Vector2(4, 3);
+		spawnMap = "maps/map1Map.tmx";
 		inventory = new Inventory();
 		inventory.setWeapon(new Weapon(0));
 
@@ -105,7 +109,8 @@ public class Player extends GameSprite {
 			else
 				velocity.x = 0.5f;
 
-			Assets.instance.songs.hit.play(0.3f);
+			int i = GamePreferences.instance.sound ? 1 : 0;
+			Assets.instance.songs.hit.play(i * GamePreferences.instance.volSound);
 		}
 		return true;
 	}
@@ -223,6 +228,22 @@ public class Player extends GameSprite {
 				(y - 1) * Constants.TILE_SIZE_PIXELS * Constants.TILE_SIZE);
 	}
 
+	public String getSpawnMap() {
+		return spawnMap;
+	}
+	
+	public Vector2 getSpawnLocation() {
+		return spawnLocation;
+	}
+	
+	public void setSpawnMap(String s) {
+		spawnMap = s;
+	}
+	
+	public void setSpawnLocation(Vector2 pos) {
+		spawnLocation = pos;
+	}
+	
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		if ((System.currentTimeMillis() - lastAttack) / 1000f > attackCooldown) {
 			aManager.setAnimation("slash", 0, false);
@@ -233,9 +254,11 @@ public class Player extends GameSprite {
 				world.attack(0, inventory.getWeapon().getRange(), inventory.attack());
 			} else {
 				if (world.attack(0, inventory.getWeapon().getRange(), inventory.attack())) {
-					Assets.instance.songs.swordHit.play(0.3f);
+					int i = GamePreferences.instance.sound ? 1 : 0;
+					Assets.instance.songs.swordHit.play(i * GamePreferences.instance.volSound);
 				} else {
-					Assets.instance.songs.swoosh.play(0.25f);
+					int i = GamePreferences.instance.sound ? 1 : 0;
+					Assets.instance.songs.swoosh.play(i * GamePreferences.instance.volSound);
 				}
 			}
 			lastAttack = System.currentTimeMillis();

@@ -1,4 +1,4 @@
-package com.codesmith.utils;
+package com.codesmith.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;

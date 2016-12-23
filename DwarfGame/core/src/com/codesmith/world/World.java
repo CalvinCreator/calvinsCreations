@@ -39,8 +39,10 @@ public class World {
 
 	public void update(float deltaTime) {
 		
-		if(player.getHealth() <= 0) 
-			setMap(currentMap);
+		if(player.getHealth() <= 0) {
+			setMap(player.getSpawnMap());
+			player.setPosition(player.getSpawnLocation().x, player.getSpawnLocation().y);
+		}
 		// Update Particle Animations
 		for (int i = 0; i < pAnimations.size(); i++)
 			if (!pAnimations.get(i).update(deltaTime))
@@ -97,6 +99,7 @@ public class World {
 	}
 
 	public void setMap(String mapPath) {
+		boolean b = currentMap.equals(mapPath);
 		currentMap = mapPath;
 		if (map != null)
 			map.dispose();
@@ -105,8 +108,11 @@ public class World {
 		platforms = new ArrayList<MovingPlatform>();
 		enemies = new ArrayList<Enemy>();
 		
+		int health = player.getHealth();
 		player = new Player(this);
 		player.setPosition(Float.valueOf((String)map.getProperties().get("spawnX")), Float.valueOf((String)map.getProperties().get("spawnY")));
+		if(!b)
+			player.health = health;
 		
 		if (map.getLayers().get("Mobs") != null) {
 			TiledMapTileLayer tileLayer = (TiledMapTileLayer) map.getLayers().get("Mobs");
@@ -149,7 +155,7 @@ public class World {
 		try {
 			renderer.updateMapData();
 		} catch (Exception e1) {
-			e1.printStackTrace();
+
 		}
 	}
 
