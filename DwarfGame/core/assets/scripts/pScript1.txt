@@ -1,0 +1,7 @@
+<proximityAction>
+	<W,20>
+<moveAction>
+	<35, 0, 3>
+<moveAction>
+	<0,0,0.5>
+	

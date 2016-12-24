@@ -6,11 +6,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.codesmith.graphics.Assets;
-import com.codesmith.ui.Menuable;
-import com.codesmith.ui.OptionsWindow;
 import com.codesmith.ui.Skins;
 import com.codesmith.utils.GamePreferences;
 

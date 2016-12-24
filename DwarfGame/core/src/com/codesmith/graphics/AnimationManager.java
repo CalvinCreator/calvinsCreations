@@ -1,9 +1,6 @@
 package com.codesmith.graphics;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;

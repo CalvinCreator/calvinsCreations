@@ -1,6 +1,5 @@
 package com.codesmith.world;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 
 public class WorldRectangle extends Rectangle {
@@ -10,9 +9,11 @@ public class WorldRectangle extends Rectangle {
 	
 	//0: map object
 	//1: enemy
+	//2: movable map object
 	//3: moving platform
 	//4: gate
-	public static final int MAP_OBJECT = 0, ENEMY = 1, MOVING_PLATFORM = 3, GATE = 4;
+	
+	public static final int MAP_OBJECT = 0, ENEMY = 1, MOVABLE_MAP_OBJECT = 2, MOVING_PLATFORM = 3, GATE = 4;
 	
 	public WorldRectangle(Rectangle r, int id) {
 		super(r);
