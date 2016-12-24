@@ -1,11 +1,11 @@
 package com.codesmith.world;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.codesmith.graphics.AnimationManager;
+import com.codesmith.scripting.ScriptAction;
 import com.codesmith.utils.Constants;
 
 public abstract class GameSprite extends Sprite {
@@ -16,6 +16,8 @@ public abstract class GameSprite extends Sprite {
 	protected int currentState = IDLE;
 	protected int health, maxHealth;
 	public static final int IDLE = 0, RUNNING = 1, FALLING = 2, CLIMBING = 3;
+	
+	protected ScriptAction action = null;
 	
 	protected float widthScale, heightScale;
 	
@@ -38,6 +40,11 @@ public abstract class GameSprite extends Sprite {
 		Vector2 v1 = new Vector2(this.getOriginX() + this.getX(), this.getOriginY() + this.getY());
 		Vector2 v2 = new Vector2(s.getOriginX() + s.getX(), s.getOriginY() + s.getY());
 		return v1.dst(v2);
+	}
+	
+	public ScriptAction addScriptAction(ScriptAction action) {
+		this.action = action;
+		return action;
 	}
 
 	public abstract void setState(int nState);

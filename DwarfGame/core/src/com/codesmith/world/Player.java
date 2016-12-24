@@ -3,7 +3,6 @@ package com.codesmith.world;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -13,6 +12,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.codesmith.graphics.AnimationManager;
 import com.codesmith.graphics.Assets;
 import com.codesmith.graphics.VectorAnimation;
+import com.codesmith.scripting.ProximityAction;
+import com.codesmith.scripting.TempAction;
 import com.codesmith.utils.Constants;
 import com.codesmith.utils.GamePreferences;
 
@@ -72,16 +73,26 @@ public class Player extends GameSprite {
 			stunnedCounter -= deltaTime;
 		if(getY() < 0)
 			hit(new Rectangle(0, 0, 1, 1), 1);
-		resolveInput(deltaTime);
-		aManager.updateWithClimbing(deltaTime, velocity);
-		velocity.x += acceleration.x * deltaTime;
-		if (currentState != CLIMBING) {
+		if(action == null || (action instanceof ProximityAction) || (action instanceof TempAction)) {
+			resolveInput(deltaTime);
+			velocity.x += acceleration.x * deltaTime;
+			if (currentState != CLIMBING) {
+				velocity.y += acceleration.y * deltaTime;
+				velocity.y = MathUtils.clamp(velocity.y, -Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
+			} else {
+				velocity.y = MathUtils.clamp(velocity.y, -Constants.PLAYER_MOVE_SPEED * deltaTime,
+						Constants.PLAYER_MOVE_SPEED * deltaTime);
+			}
+			if(action instanceof ProximityAction || action instanceof TempAction) {
+				action = action.execute(this, deltaTime);
+			}
+		} else {
 			velocity.y += acceleration.y * deltaTime;
 			velocity.y = MathUtils.clamp(velocity.y, -Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
-		} else {
-			velocity.y = MathUtils.clamp(velocity.y, -Constants.PLAYER_MOVE_SPEED * deltaTime,
-					Constants.PLAYER_MOVE_SPEED * deltaTime);
+			action = action.execute(this, deltaTime);
 		}
+		
+		aManager.updateWithClimbing(deltaTime, velocity);
 	}
 
 	public void draw(SpriteBatch batch) {
@@ -212,12 +223,14 @@ public class Player extends GameSprite {
 	}
 
 	public void keyUp(int keycode) {
-		if (keycode == Keys.A) {
-			if (!Gdx.input.isButtonPressed(Keys.D) && getState() == RUNNING)
-				setState(IDLE);
-		} else if (keycode == Keys.D) {
-			if (!Gdx.input.isButtonPressed(Keys.A) && getState() == RUNNING)
-				setState(IDLE);
+		if(action == null || (action instanceof ProximityAction) || (action instanceof TempAction)) {
+			if (keycode == Keys.A) {
+				if (!Gdx.input.isButtonPressed(Keys.D) && getState() == RUNNING)
+					setState(IDLE);
+			} else if (keycode == Keys.D) {
+				if (!Gdx.input.isButtonPressed(Keys.A) && getState() == RUNNING)
+					setState(IDLE);
+			}
 		}
 	}
 
@@ -245,7 +258,7 @@ public class Player extends GameSprite {
 	}
 	
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if ((System.currentTimeMillis() - lastAttack) / 1000f > attackCooldown) {
+		if ((System.currentTimeMillis() - lastAttack) / 1000f > attackCooldown && (action == null || (action instanceof TempAction) ||(action instanceof ProximityAction))) {
 			aManager.setAnimation("slash", 0, false);
 			if (currentState == CLIMBING) {
 				setState(IDLE); // climbing doesn't support setting the state to

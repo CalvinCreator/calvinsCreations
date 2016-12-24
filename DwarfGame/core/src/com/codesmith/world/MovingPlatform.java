@@ -1,10 +1,6 @@
 package com.codesmith.world;
 
-import java.util.Iterator;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.codesmith.graphics.Assets;
@@ -73,6 +69,10 @@ public class MovingPlatform {
 					right = true;
 			}
 		}
+	}
+	
+	public float getSpeed() {
+		return speed;
 	}
 	
 	public Rectangle getBoundingRectangle() {
