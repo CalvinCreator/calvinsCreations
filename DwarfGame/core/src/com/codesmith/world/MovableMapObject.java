@@ -59,7 +59,10 @@ public class MovableMapObject extends Sprite {
 	
 	@Override
 	public Rectangle getBoundingRectangle() {
-		return bounds;
+		Rectangle r = new Rectangle(bounds);
+		r.x++;
+		r.width -= 2;
+		return r;
 	}
 	
 	public float dist(GameSprite other) {

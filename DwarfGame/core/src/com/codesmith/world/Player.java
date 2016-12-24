@@ -43,7 +43,7 @@ public class Player extends GameSprite {
 		this.world = world;
 		maxHealth = health = 4;
 		spawnLocation = new Vector2(4, 3);
-		spawnMap = "maps/map1Map.tmx";
+		spawnMap = "maps/map1.tmx";
 		inventory = new Inventory();
 		inventory.setWeapon(new Weapon(0));
 
