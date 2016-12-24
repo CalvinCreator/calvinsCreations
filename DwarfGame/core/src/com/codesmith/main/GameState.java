@@ -27,12 +27,12 @@ public class GameState extends CScreen implements Menuable {
 	public GameState() {
 		init();
 	}
-
+	
 	private void init() {
 		Assets.instance.songs.trackTwo.setLooping(true);
 		Assets.instance.songs.trackTwo.play();
 		world = new World();
-		world.setMap("maps/map1Map.tmx");
+		world.setMap("maps/map1.tmx", null);
 		camHelper = new CameraHelper();
 		camHelper.setTarget(world.getPlayer());
 		renderer = new Renderer(world, camHelper);

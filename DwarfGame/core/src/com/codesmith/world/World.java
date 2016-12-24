@@ -2,8 +2,6 @@ package com.codesmith.world;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.maps.MapObject;
@@ -15,6 +13,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.codesmith.graphics.ParticleAnimation;
 import com.codesmith.main.Renderer;
+import com.codesmith.scripting.JumpAction;
+import com.codesmith.scripting.MoveAction;
+import com.codesmith.scripting.ScriptAction;
 import com.codesmith.utils.Constants;
 
 public class World {
@@ -25,29 +26,34 @@ public class World {
 	private ArrayList<Enemy> enemies;
 	private ArrayList<MovingPlatform> platforms;
 	private ArrayList<ParticleAnimation> pAnimations;
+	private ArrayList<MovableMapObject> movableMapObjects;
 	private ArrayList<Gate> gates;
 	private Renderer renderer;
 	private String currentMap = "";
+	private float deltaTime = 0;
 
 	public World() {
 		player = new Player(this);
 		enemies = new ArrayList<Enemy>();
 		platforms = new ArrayList<MovingPlatform>();
 		pAnimations = new ArrayList<ParticleAnimation>();
+		movableMapObjects = new ArrayList<MovableMapObject>();
 		gates = new ArrayList<Gate>();
 	}
 
 	public void update(float deltaTime) {
-		
+		this.deltaTime = deltaTime;
 		if(player.getHealth() <= 0) {
-			setMap(player.getSpawnMap());
+			setMap(player.getSpawnMap(), player.getSpawnLocation());
 			player.setPosition(player.getSpawnLocation().x, player.getSpawnLocation().y);
 		}
 		// Update Particle Animations
 		for (int i = 0; i < pAnimations.size(); i++)
 			if (!pAnimations.get(i).update(deltaTime))
 				pAnimations.remove(i--);
-
+		for(MovableMapObject m : movableMapObjects) 
+			m.update(deltaTime);
+		
 		for (Gate g : gates)
 			g.update(deltaTime);
 
@@ -70,11 +76,13 @@ public class World {
 		// Resolve Map Collisions
 		HashSet<WorldRectangle> rects = new HashSet<WorldRectangle>();
 		for (MapObject obj : map.getLayers().get(0).getObjects())
-			rects.add(new WorldRectangle((((RectangleMapObject) obj).getRectangle()), 0));
+			rects.add(new WorldRectangle((((RectangleMapObject) obj).getRectangle()), WorldRectangle.MAP_OBJECT));
 		for (MovingPlatform p : platforms)
-			rects.add(new WorldRectangle(((p).getBoundingRectangle()), 3, p));
+			rects.add(new WorldRectangle(p.getBoundingRectangle(), WorldRectangle.MOVING_PLATFORM, p));
+		for(MovableMapObject o : movableMapObjects)
+			rects.add(new WorldRectangle(o.getBoundingRectangle(), WorldRectangle.MOVABLE_MAP_OBJECT, o));
 		for (Gate g : gates)
-			rects.add(new WorldRectangle(g.getCollisionBox(), 4, g));
+			rects.add(new WorldRectangle(g.getCollisionBox(), WorldRectangle.GATE, g));
 		for (Enemy e : enemies) {
 			e.setPosition(resolveMapCollisions(rects, e));
 		}
@@ -84,7 +92,7 @@ public class World {
 			r.y /= Constants.TILE_SIZE;
 			r.width /= Constants.TILE_SIZE;
 			r.height /= Constants.TILE_SIZE;
-			rects.add(new WorldRectangle(r, 1, e));
+			rects.add(new WorldRectangle(r, WorldRectangle.ENEMY, e));
 		}
 		player.setPosition(resolveMapCollisions(rects, player));
 
@@ -97,8 +105,12 @@ public class World {
 	public ArrayList<Enemy> getEnemies() {
 		return enemies;
 	}
+	
+	public ArrayList<MovableMapObject> getMovableMapObjects() {
+		return movableMapObjects;
+	}
 
-	public void setMap(String mapPath) {
+	public void setMap(String mapPath, Vector2 dest) {
 		boolean b = currentMap.equals(mapPath);
 		currentMap = mapPath;
 		if (map != null)
@@ -107,10 +119,14 @@ public class World {
 		gates = new ArrayList<Gate>();
 		platforms = new ArrayList<MovingPlatform>();
 		enemies = new ArrayList<Enemy>();
+		movableMapObjects = new ArrayList<MovableMapObject>();
 		
 		int health = player.getHealth();
 		player = new Player(this);
-		player.setPosition(Float.valueOf((String)map.getProperties().get("spawnX")), Float.valueOf((String)map.getProperties().get("spawnY")));
+		if(dest == null)
+			player.setPosition(Float.valueOf((String)map.getProperties().get("spawnX")), Float.valueOf((String)map.getProperties().get("spawnY")));
+		else
+			player.setPosition(dest.x, dest.y);
 		if(!b)
 			player.health = health;
 		
@@ -122,9 +138,14 @@ public class World {
 						switch (tileLayer.getCell(x, y).getTile().getId()) {
 						case 178:
 							enemies.add(new Skeleton(x, y, player));
+							if(tileLayer.getCell(x, y).getTile().getProperties().get("script") != null) {
+								try {
+									enemies.get(enemies.size() - 1).addScriptAction(ScriptAction.loadScript(Gdx.files.internal("scripts/" + (String) tileLayer.getCell(x, y).getTile().getProperties().get("script") + ".txt").readString(), this));
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
 							break;
-						default:
-							enemies.add(new Skeleton(x, y, player));
 						}
 
 			map.getLayers().remove(map.getLayers().get("Mobs"));
@@ -137,6 +158,19 @@ public class World {
 					e.printStackTrace();
 				}
 			}
+			map.getLayers().remove(map.getLayers().getIndex("Moving Platforms"));
+		}
+		if (map.getLayers().get("Moving Walls") != null) {
+			for (MapObject obj : map.getLayers().get("Moving Walls").getObjects()) {
+				movableMapObjects.add(new MovableMapObject(obj, player, this));
+				if(obj.getProperties().get("script") != null)
+					try {
+						movableMapObjects.get(movableMapObjects.size() - 1).addScriptAction(ScriptAction.loadScript(Gdx.files.internal("scripts/" + obj.getProperties().get("script") + ".txt").readString(), this));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+			}
+			map.getLayers().remove(map.getLayers().getIndex("Moving Walls"));
 		}
 		if (map.getLayers().get("Gate") != null) {
 			for (MapObject obj : map.getLayers().get("Gate").getObjects()) {
@@ -151,12 +185,21 @@ public class World {
 					e.printStackTrace();
 				}
 			}
+			map.getLayers().remove(map.getLayers().getIndex("Gate"));
+		}
+		if(map.getProperties().get("script") != null) {
+			try {
+				player.addScriptAction(ScriptAction.loadScript(Gdx.files.internal("scripts/" + (String) map.getProperties().get("script") + ".txt").readString(), this));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		try {
 			renderer.updateMapData();
 		} catch (Exception e1) {
 
 		}
+		
 	}
 
 	public ArrayList<ParticleAnimation> getParticleAnimations() {
@@ -189,12 +232,13 @@ public class World {
 				if (r.id == WorldRectangle.GATE) {
 					((Gate)r.getParent()).collide = true;
 					if(((Gate)r.getParent()).open() && Gdx.input.isKeyPressed(Keys.S)) {
-						setMap("maps/" + ((Gate)r.getParent()).getMap() + ".tmx");
 						String destination = ((Gate)r.getParent()).getDestination();
+						Vector2 t = null;
 						if(!destination.contains("spawn")) {
 							String[] locs = destination.split(",");
-							player.setPosition(Float.valueOf(locs[0]), Float.valueOf(locs[1]));
+							t = new Vector2(Float.valueOf(locs[0]), Float.valueOf(locs[1]));
 						}
+						setMap("maps/" + ((Gate)r.getParent()).getMap() + ".tmx", t);
 					}
 				} else {
 					if (r.id == WorldRectangle.ENEMY)
@@ -207,15 +251,19 @@ public class World {
 						
 						s.velocity.y = 0;
 						p.y = r.y + r.height;
-						if (r.id == 3) {
+						if (r.id == WorldRectangle.MOVING_PLATFORM) {
 							MovingPlatform plat = (MovingPlatform) (r.getParent());
 							if (plat.path == 0) {
 								s.velocity.x += plat.delta;
 								done = true;
 							} else if(plat.path == 1) {
-								r.y -= 10;
+								p.y = plat.getBoundingRectangle().y + plat.getBoundingRectangle().height;
 								s.velocity.y = 0;
-								done = true;
+								p.y *= Constants.TILE_SIZE;
+								player.setState(Player.IDLE);
+								Vector2 v = new Vector2(p.x + s.velocity.x, p.y + s.velocity.y);
+								s.velocity.y = -plat.getSpeed() * deltaTime * 1.0004f;
+								return v;
 							}
 						}
 					}
@@ -228,8 +276,14 @@ public class World {
 					// R is above player
 					if (p.contains(r.x - s.velocity.x, r.y - s.velocity.y)
 							&& p.contains(r.x + r.width - s.velocity.x, r.y - s.velocity.y)) {
-						s.velocity.y = 0;
-						p.y = r.y - p.height;
+						if(r.id == WorldRectangle.MOVING_PLATFORM && ((MovingPlatform)r.getParent()).path == 1) {
+							MovingPlatform plat = (MovingPlatform)r.getParent();
+							s.velocity.y = plat.delta < 0 ? -plat.getSpeed() * deltaTime : 0;
+							p.setY(r.y - p.height);
+						} else {
+							s.velocity.y = 0;
+							p.y = r.y - p.height;
+						}
 					}
 					// R is right of player
 					if (p.contains(r.x - s.velocity.x, r.y - s.velocity.y)
@@ -246,15 +300,19 @@ public class World {
 							falling = false;
 							s.velocity.y = 0;
 							p.setY(r.y + r.height);
-							if (r.id == 3) {
+							if (r.id == WorldRectangle.MOVING_PLATFORM) {
 								MovingPlatform plat = (MovingPlatform) (r.getParent());
 								if (plat.path == 0 && !done) {
 									s.velocity.x += plat.delta;
 									done = true;
 								} else if(plat.path == 1 && !done) {
-									r.y -= 10;
+									p.y = plat.getBoundingRectangle().y + plat.getBoundingRectangle().height;
 									s.velocity.y = 0;
-									done = true;
+									p.y *= Constants.TILE_SIZE;
+									player.setState(Player.IDLE);
+									Vector2 v = new Vector2(p.x + s.velocity.x, p.y + s.velocity.y);
+									s.velocity.y = -plat.getSpeed() * deltaTime * 1.0004f;
+									return v;
 								}
 							}
 						} else {
@@ -268,8 +326,14 @@ public class World {
 						float x = r.x + r.width - p.x;
 						float y = p.y + p.height - r.y;
 						if (Math.abs(x) > Math.abs(y)) {
-							s.velocity.y = 0;
-							p.setY(r.y - p.height);
+							if(r.id == WorldRectangle.MOVING_PLATFORM && ((MovingPlatform)r.getParent()).path == 1) {
+								MovingPlatform plat = (MovingPlatform)r.getParent();
+								s.velocity.y = plat.delta < 0 ? -plat.getSpeed() * deltaTime : 0;
+								p.setY(r.y - p.height);
+							} else {
+								s.velocity.y = 0;
+								p.setY(r.y - p.height);
+							}
 						} else {
 							s.velocity.x = 0;
 							p.setX(r.x + r.width);
@@ -281,8 +345,14 @@ public class World {
 						float x = p.x + p.width - r.x;
 						float y = p.y + p.height - r.y;
 						if (Math.abs(x) > Math.abs(y)) {
-							s.velocity.y = 0;
-							p.setY(r.y - p.height);
+							if(r.id == WorldRectangle.MOVING_PLATFORM && ((MovingPlatform)r.getParent()).path == 1) {
+								MovingPlatform plat = (MovingPlatform)r.getParent();
+								s.velocity.y = plat.delta < 0 ? -plat.getSpeed() * deltaTime : 0;
+								p.setY(r.y - p.height);
+							} else {
+								s.velocity.y = 0;
+								p.setY(r.y - p.height);
+							}
 						} else {
 							s.velocity.x = 0;
 							p.setX(r.x - p.width);
@@ -297,15 +367,19 @@ public class World {
 							falling = false;
 							s.velocity.y = 0;
 							p.setY(r.y + r.height);
-							if (r.id == 3) {
+							if (r.id == WorldRectangle.MOVING_PLATFORM) {
 								MovingPlatform plat = (MovingPlatform) (r.getParent());
 								if (plat.path == 0 && !done) {
 									s.velocity.x += plat.delta;
 									done = true;
 								} else if(plat.path == 1 && !done) {
-									r.y -= 10;
+									p.y = plat.getBoundingRectangle().y + plat.getBoundingRectangle().height;
 									s.velocity.y = 0;
-									done = true;
+									p.y *= Constants.TILE_SIZE;
+									player.setState(Player.IDLE);
+									Vector2 v = new Vector2(p.x + s.velocity.x, p.y + s.velocity.y);
+									s.velocity.y = -plat.getSpeed() * deltaTime * 1.0004f;
+									return v;
 								}
 							}
 						} else {
@@ -316,12 +390,12 @@ public class World {
 				}
 			}
 		}
-
+		
 		if (falling)
 			s.setState(GameSprite.FALLING);
 		else if (prevState != GameSprite.FALLING)
 			s.setState(prevState);
-		else
+		else 
 			s.setState(GameSprite.IDLE);
 
 		return new Vector2(p.x + s.velocity.x, p.y + s.velocity.y);

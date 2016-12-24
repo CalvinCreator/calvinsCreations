@@ -1,19 +1,18 @@
 package com.codesmith.main;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.codesmith.graphics.Assets;
 import com.codesmith.graphics.ParticleAnimation;
 import com.codesmith.utils.CameraHelper;
 import com.codesmith.utils.Constants;
 import com.codesmith.world.Enemy;
 import com.codesmith.world.Gate;
+import com.codesmith.world.MovableMapObject;
 import com.codesmith.world.MovingPlatform;
 import com.codesmith.world.World;
 
@@ -29,7 +28,7 @@ public class Renderer {
 	
 	ShapeRenderer r = new ShapeRenderer();
 	
-	private int[] backgroundLayers, foregroundLayers;
+	private int[] layersBehindMovableWalls, otherBackgroundLayers, foregroundLayers;
 	
 	public Renderer(World world, CameraHelper camHelper) {
 		this.world = world;
@@ -51,7 +50,12 @@ public class Renderer {
 		r.setProjectionMatrix(camera.combined);
 		
 		//Draw every layer behind sprites
-		mapRenderer.render(backgroundLayers);
+		mapRenderer.render(layersBehindMovableWalls);
+		batch.begin();
+		for(MovableMapObject m : world.getMovableMapObjects())
+			m.draw(batch);
+		batch.end();
+		mapRenderer.render(otherBackgroundLayers);
 		
 		batch.begin();
 		
@@ -94,23 +98,30 @@ public class Renderer {
 		camHelper.setTarget(world.getPlayer());
 		camHelper.setPosition(world.getPlayer().getPosition());
 		camHelper.apply();
-
+	
 		mapRenderer = new OrthogonalTiledMapRenderer(world.getMap(), Constants.TILE_SIZE);
-		int pLayer = world.getMap().getLayers().getIndex("Ladders");
+		
+		int pLayer = world.getMap().getLayers().getIndex("Grass");
 		if(pLayer == -1)
-			throw new Exception("Ladder Layer not found in map.");
-		
-		backgroundLayers = new int[pLayer];
+			throw new Exception("Grass Layer not found in map.");
+		layersBehindMovableWalls = new int[pLayer];
 		for(int x = 1; x <= pLayer; x++)
-			backgroundLayers[x-1] = x;
+			layersBehindMovableWalls[x-1] = x;
 		
+		int ladderLayer = world.getMap().getLayers().getIndex("Ladders");
+		if(ladderLayer == -1)
+			throw new Exception("Ladders Layer not found in map.");
 		int foregroundLayer = world.getMap().getLayers().getIndex("Foreground");
 		if(foregroundLayer == -1)
 			throw new Exception("Foregound layer not found in map.");
-
-		foregroundLayers = new int[foregroundLayer - pLayer];
-		for(int x = pLayer + 1; x <= foregroundLayer; x++)
-			foregroundLayers[x - 1 - pLayer] = x;
+		
+		otherBackgroundLayers = new int[ladderLayer - pLayer];
+		for(int i = pLayer + 1; i <= ladderLayer; i++)
+			otherBackgroundLayers[i - 1 - pLayer] = i;
+		
+		foregroundLayers = new int[foregroundLayer - ladderLayer];
+		for(int x = ladderLayer + 1; x <= foregroundLayer; x++)
+			foregroundLayers[x - 1 - ladderLayer] = x;
 	}
 	
 	public void resize(int width, int height) {

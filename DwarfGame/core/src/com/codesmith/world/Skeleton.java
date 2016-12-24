@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.codesmith.ai.BasicAI;
 import com.codesmith.graphics.Assets;
+import com.codesmith.scripting.ProximityAction;
 import com.codesmith.utils.Constants;
 
 public class Skeleton extends Enemy {
@@ -35,20 +36,26 @@ public class Skeleton extends Enemy {
 		velocity.y += acceleration.y * deltaTime;
 		velocity.y = MathUtils.clamp(velocity.y, -Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
 		
-		ai.update(player.getPosition(), this.getPosition());
-		if(stunnedCounter > 0)
-			velocity.y = ai.getVelocity(deltaTime).add(velocity).y;
-		else {
-			velocity.y = ai.getVelocity(deltaTime).add(velocity).y;
-			velocity.x = ai.getVelocity(deltaTime).x;
-		}
+		if(action == null || action instanceof ProximityAction) {
+			ai.update(player.getPosition(), this.getPosition());
+			if(stunnedCounter > 0)
+				velocity.y = ai.getVelocity(deltaTime).add(velocity).y;
+			else {
+				velocity.y = ai.getVelocity(deltaTime).add(velocity).y;
+				velocity.x = ai.getVelocity(deltaTime).x;
+			}
 		
-		velocity.x = MathUtils.clamp(velocity.x, -Constants.PLAYER_MOVE_SPEED / 2, Constants.PLAYER_MOVE_SPEED / 2);
+			velocity.x = MathUtils.clamp(velocity.x, -Constants.PLAYER_MOVE_SPEED / 2, Constants.PLAYER_MOVE_SPEED / 2);
 		
-		if(currentState != FALLING && velocity.x == 0) 
-			setState(IDLE);
-		else
-			setState(RUNNING);
+			if(currentState != FALLING && velocity.x == 0) 
+				setState(IDLE);
+			else
+				setState(RUNNING);
+			
+			if(action instanceof ProximityAction)
+				action = action.execute(this, deltaTime);
+		} else 
+			action = action.execute(this, deltaTime);
 		
 		aManager.update(deltaTime);
 	}

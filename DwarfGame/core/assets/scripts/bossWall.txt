@@ -1,0 +1,8 @@
+<proximityAction>
+	<P,25>
+<moveAction>
+	<0,40,1>
+<moveAction>
+	<0,0,1>
+<moveAction>
+	<0,-40,1>

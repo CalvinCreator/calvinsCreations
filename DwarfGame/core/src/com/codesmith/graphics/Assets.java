@@ -99,13 +99,14 @@ public class Assets implements Disposable, AssetErrorListener {
 	}
 
 	public class MapAssets {
-		public final AtlasRegion thinBlueLeft, thinBlueMiddle, thinBlueRight, thinBlueUp;
+		public final AtlasRegion thinBlueLeft, thinBlueMiddle, thinBlueRight, thinBlueUp, thinBlueVerticalMiddle;
 		
 		public MapAssets(TextureAtlas atlas) {
 			thinBlueLeft = atlas.findRegion("70");
 			thinBlueMiddle = atlas.findRegion("71");
 			thinBlueRight = atlas.findRegion("72");
 			thinBlueUp = atlas.findRegion("61");
+			thinBlueVerticalMiddle = atlas.findRegion("62");
 		}
 	}
 	
