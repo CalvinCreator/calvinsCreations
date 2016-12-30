@@ -84,14 +84,15 @@ public class CameraHelper {
 		camera.position.x = position.x;
 		camera.position.y = position.y;
 
-		float lowerX = camera.viewportWidth / 2;
-		float upperX = world.getMap().getProperties().get("width", Integer.class) * Constants.TILE_SIZE * Constants.TILE_SIZE_PIXELS - camera.viewportWidth / 2;
+		try {
+			float lowerX = camera.viewportWidth / 2;
+			float upperX = world.getMap().getProperties().get("width", Integer.class) * Constants.TILE_SIZE * Constants.TILE_SIZE_PIXELS - camera.viewportWidth / 2;
 		
-		camera.zoom = zoom;
+			camera.zoom = zoom;
 		
-		camera.position.x = MathUtils.clamp(camera.position.x, lowerX, upperX);
-		camera.position.y = MathUtils.clamp(camera.position.y, camera.viewportHeight / 2, world.getMap().getProperties().get("height", Integer.class) * Constants.TILE_SIZE * Constants.TILE_SIZE_PIXELS - camera.viewportHeight / 2);
-		
+			camera.position.x = MathUtils.clamp(camera.position.x, lowerX, upperX);
+			camera.position.y = MathUtils.clamp(camera.position.y, camera.viewportHeight / 2, world.getMap().getProperties().get("height", Integer.class) * Constants.TILE_SIZE * Constants.TILE_SIZE_PIXELS - camera.viewportHeight / 2);
+		} catch(Exception e) {}
 		camera.update();
 	}
 	

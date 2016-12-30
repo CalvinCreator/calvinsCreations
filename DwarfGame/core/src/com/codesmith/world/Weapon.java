@@ -22,7 +22,7 @@ public class Weapon {
 		switch (id) {
 		case 0:
 			img = Assets.instance.icons.sword11;
-			range = 10f;
+			range = 3f;
 			damage = 1;
 		}
 	}

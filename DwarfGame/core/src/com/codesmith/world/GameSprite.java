@@ -15,7 +15,7 @@ public abstract class GameSprite extends Sprite {
 	protected AnimationManager aManager;
 	protected int currentState = IDLE;
 	protected int health, maxHealth;
-	public static final int IDLE = 0, RUNNING = 1, FALLING = 2, CLIMBING = 3;
+	public static final int IDLE = 0, RUNNING = 1, FALLING = 2, CLIMBING = 3, ATTACKING = 4;
 	
 	protected ScriptAction action = null;
 	
@@ -30,7 +30,7 @@ public abstract class GameSprite extends Sprite {
 	
 	public abstract void update(float deltaTime);
 	
-	public abstract boolean hit(Rectangle r, int damage); 
+	public abstract boolean hit(Rectangle r, int damage, float magnitude); 
 	
 	public void draw(SpriteBatch batch) {
 		super.draw(batch);

@@ -1,11 +1,11 @@
 package com.codesmith.scripting;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.codesmith.world.GameSprite;
 import com.codesmith.world.MovableMapObject;
 
-public class ProximityAction extends ScriptAction {
+public class ProximityAction extends ScriptAction implements Spritable {
 	
 	//will call next action when focus gets close enough
 	private GameSprite focus = null;
@@ -21,6 +21,18 @@ public class ProximityAction extends ScriptAction {
 		this.location = location;
 		this.distance = distance;
 	}
+	
+	public ScriptAction execute(Sprite s, float deltaTime) {
+		if(location == null) {
+			if(Math.abs(new Vector2(s.getX(), s.getY()).dst(focus.getPosition())) < distance)
+				return next;
+		} else {
+			double dst = location.dst(new Vector2(s.getX(), s.getY()));
+			if(Math.abs(dst) < distance)
+				return next;
+		}
+		return this;
+	}
 
 	@Override
 	public ScriptAction execute(GameSprite target, float deltaTime) {
@@ -28,7 +40,7 @@ public class ProximityAction extends ScriptAction {
 			if(Math.abs(target.dist(focus)) < distance) 
 				return next;
 		} else {
-			double dist = location.dst(target.getPosition());
+			double dist = location.dst(target.getPosition().add(new Vector2(target.getOriginX(), target.getOriginY())));
 			if(Math.abs(dist) < distance) 
 				return next;
 		}

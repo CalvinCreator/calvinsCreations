@@ -2,6 +2,7 @@ package com.codesmith.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.codesmith.graphics.Assets;
@@ -16,7 +17,7 @@ public class GameState extends CScreen implements Menuable {
 	public static final String TAG = GameState.class.getName();
 
 	private World world;
-	private Renderer renderer;
+	public Renderer renderer;
 
 	private CameraHelper camHelper;
 
@@ -31,12 +32,13 @@ public class GameState extends CScreen implements Menuable {
 	private void init() {
 		Assets.instance.songs.trackTwo.setLooping(true);
 		Assets.instance.songs.trackTwo.play();
+		Assets.instance.songs.currentSong = Assets.instance.songs.trackTwo;
 		world = new World();
-		world.setMap("maps/map1.tmx", null);
 		camHelper = new CameraHelper();
 		camHelper.setTarget(world.getPlayer());
 		renderer = new Renderer(world, camHelper);
 		world.setRenderer(renderer);
+		world.setMap("maps/map1.tmx", null);
 		try {
 			renderer.updateMapData();
 		} catch (Exception e) {
@@ -85,12 +87,16 @@ public class GameState extends CScreen implements Menuable {
 	public void dispose() {
 		renderer.dispose();
 		world.dispose();
+		stage.dispose();
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
-		if (!showMenu)
+		if (!showMenu) {
 			world.getPlayer().keyUp(keycode);
+			if(keycode == Keys.B)
+				renderer.debug = !renderer.debug;
+		}
 		else
 			stage.keyUp(keycode);
 		return false;
@@ -155,10 +161,19 @@ public class GameState extends CScreen implements Menuable {
 		if (showMenu)
 			stage.draw();
 	}
+	
+	@Override
+	public void setAlpha(float a) {
+		renderer.setAlpha(a);
+	}
 
 	@Override
 	public void hide() {
-		Assets.instance.songs.trackTwo.stop();
+		
 	}
 
+	public Batch getBatch() {
+		return renderer.getBatch();
+	}
+	
 }

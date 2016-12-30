@@ -6,3 +6,5 @@
 	<0,0,1.6>
 <moveAction>
 	<0,-40,1.2>
+<musicChangeAction>
+	<3>

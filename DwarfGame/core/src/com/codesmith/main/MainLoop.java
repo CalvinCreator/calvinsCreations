@@ -7,12 +7,22 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.codesmith.graphics.Assets;
 import com.codesmith.ui.Skins;
 import com.codesmith.utils.GamePreferences;
 
 public class MainLoop extends Game implements InputProcessor {
 	public static final String TAG = MainLoop.class.getName();
+	
+	//for fade in/out transitions
+	float d1, d2;
+	float elapsed = 0;
+	Texture screen = null;
+	String transition = "";
+	CScreen next;
 	
 	@Override
 	public void create () {
@@ -26,9 +36,65 @@ public class MainLoop extends Game implements InputProcessor {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0.365f, 0.592f, 0.553f, 1);
+		if(transition.equals("")) {
+			Gdx.gl.glClearColor(0.365f, 0.592f, 0.553f, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			getScreen().render(Gdx.graphics.getDeltaTime() * 1f);
+		} else if(transition.indexOf("fadeOut") != -1) {
+			fadeOut(Gdx.graphics.getDeltaTime());
+		} else if(transition.indexOf("fadeIn") != -1) {
+			fadeIn(Gdx.graphics.getDeltaTime());
+		}
+	}
+	
+	private void fadeOut(float deltaTime) {
+		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		getScreen().render(Gdx.graphics.getDeltaTime() * 1f);
+		
+		elapsed += deltaTime;
+		if(elapsed >= d1) 
+			elapsed = d1;
+		
+		float alpha = 1 - elapsed / d1;
+		
+		((CScreen)(getScreen())).setAlpha(alpha);
+		getScreen().render(deltaTime);
+		
+		if(elapsed >= d1) {
+			if(next != null) {
+				setScreen(next);
+				next = null;
+			}
+			transition = transition.replace("Out", "");
+			elapsed = 0;
+			d1 = d2;
+			if(transition.equals("fade")) transition = "";
+		}
+	}
+	
+	private void fadeIn(float deltaTime) {
+		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		elapsed += deltaTime;
+		if(elapsed >= d1)
+			elapsed = d1;
+		
+		float alpha = elapsed / d1;
+		((CScreen)(getScreen())).setAlpha(alpha);
+		getScreen().render(deltaTime);
+		
+		if(elapsed >= d1) {
+			if(next != null) {
+				setScreen(next);
+				next = null;
+			}
+			transition = transition.replace("In", "");
+			elapsed = 0;
+			d1 = d2;
+			if(transition.equals("fade")) transition = "";
+					
+		}
 	}
 	
 	@Override
@@ -41,6 +107,15 @@ public class MainLoop extends Game implements InputProcessor {
 		getScreen().dispose();
 		Assets.instance.dispose();
 		Skins.disposeSkins();
+		if(screen != null)
+			screen.dispose();
+	}
+	
+	public void fadeTransition(CScreen nextScreen, float d1, float d2) {
+		transition = "fadeOutIn";
+		this.d1 = d1;
+		this.d2 = d2;
+		next = nextScreen;
 	}
 	
 	@Override

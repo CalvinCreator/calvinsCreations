@@ -16,9 +16,9 @@ public abstract class Enemy extends GameSprite {
 	
 	public Enemy(float x, float y, AtlasRegion img, Player player, float wScale, float hScale) {
 		super();
-		float width, height;
-		width = Constants.PLAYER_HEIGHT * (float)img.getRegionWidth() / (float)Assets.instance.gameAssets.run1.getRegionWidth();
-		height = Constants.PLAYER_HEIGHT * (float)img.getRegionHeight() / (float)Assets.instance.gameAssets.run1.getRegionHeight();
+		
+		float width = Constants.PLAYER_HEIGHT * (float)img.getRegionWidth() / (float)Assets.instance.gameAssets.run1.getRegionWidth();
+		float height = Constants.PLAYER_HEIGHT * (float)img.getRegionHeight() / (float)Assets.instance.gameAssets.run1.getRegionHeight();
 		setSize(width * wScale, height * hScale);
 		setScale(1, 1);
 		setOrigin(getWidth() / 2, getHeight() / 2);
@@ -28,6 +28,7 @@ public abstract class Enemy extends GameSprite {
 	
 	@Override
 	public void draw(SpriteBatch batch) {
+		setAlpha(batch.getColor().a);
 		this.setRegion(aManager.getKeyFrame());
 		
 		if(ai.agroed())
@@ -41,14 +42,14 @@ public abstract class Enemy extends GameSprite {
 		return damage;
 	}
 	
-	public boolean hit(Rectangle r, int damage) {
+	public boolean hit(Rectangle r, int damage, float magnitude) {
 		stunnedCounter = 0.5f;
 		velocity.y = Constants.PLAYER_JUMP_SPEED / 2;
 		if(getX() + getWidth() / 2 < r.x + r.width / 2) {
-			velocity.x = -0.3f;
+			velocity.x = -magnitude;
 		}
 		else
-			velocity.x = 0.3f;
+			velocity.x = magnitude;
 		health-=damage;
 		ai.addAgro(100);
 		return true;

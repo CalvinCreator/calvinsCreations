@@ -11,6 +11,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -26,6 +27,8 @@ public class Assets implements Disposable, AssetErrorListener {
 	public Icons icons;
 	public Songs songs;
 	public TextureAtlas menuAssets, backgrounds;
+	
+	public TextureRegion credits;
 
 	private Assets() {
 	}
@@ -71,7 +74,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		for (Texture t : atlas.getTextures())
 			t.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		mapAssets = new MapAssets(atlas);
-		Gdx.app.log(TAG, "tileset loaded.");
+		Gdx.app.log(TAG, "map.pack loaded.");
 		
 		atlas = assetManager.get("menuImages/menuAssets.pack");
 		for (Texture t : atlas.getTextures())
@@ -81,16 +84,21 @@ public class Assets implements Disposable, AssetErrorListener {
 		
 		assetManager.load("music/trackOne.mp3", Music.class);
 		assetManager.load("music/trackTwo.mp3", Music.class);
+		assetManager.load("music/trackThree.mp3", Music.class);
+		assetManager.load("music/trackFour.mp3", Music.class);
 		assetManager.finishLoading();
-		Music[] songs = {assetManager.get("music/trackOne.mp3"), assetManager.get("music/trackTwo.mp3")};
+		Music[] songs = {assetManager.get("music/trackOne.mp3"), assetManager.get("music/trackTwo.mp3"), assetManager.get("music/trackThree.mp3"), assetManager.get("music/trackFour.mp3")};
 		this.songs = new Songs(songs);
 		Gdx.app.log(TAG, "music loaded.");
+		
+		credits = new TextureRegion(new Texture("images/credits.png"));
 
 	}
 
 	@Override
 	public void dispose() {
 		assetManager.dispose();
+		credits.getTexture().dispose();
 	}
 
 	@Override
@@ -99,7 +107,7 @@ public class Assets implements Disposable, AssetErrorListener {
 	}
 
 	public class MapAssets {
-		public final AtlasRegion thinBlueLeft, thinBlueMiddle, thinBlueRight, thinBlueUp, thinBlueVerticalMiddle;
+		public final AtlasRegion thinBlueLeft, thinBlueMiddle, thinBlueRight, thinBlueUp, thinBlueVerticalMiddle, ladderBottom, ladderTop, ladderMiddle;
 		
 		public MapAssets(TextureAtlas atlas) {
 			thinBlueLeft = atlas.findRegion("70");
@@ -107,11 +115,15 @@ public class Assets implements Disposable, AssetErrorListener {
 			thinBlueRight = atlas.findRegion("72");
 			thinBlueUp = atlas.findRegion("61");
 			thinBlueVerticalMiddle = atlas.findRegion("62");
+			ladderBottom = atlas.findRegion("98");
+			ladderTop = atlas.findRegion("76");
+			ladderMiddle = atlas.findRegion("87");
 		}
 	}
 	
 	public class CharacterAssets {
-		public final AtlasRegion run1, run2, run3, run4, jump1, jump2, jump3, jump4, hit1, hit2, slash1, slash2, slash3, climb1, climb2, climb3, climb4, skeletonWalk1, skeletonWalk2, skeletonWalk3;
+		public final AtlasRegion run1, run2, run3, run4, jump1, jump2, jump3, jump4, hit1, hit2, slash1, slash2, slash3, climb1, climb2, climb3, climb4, 
+		skeletonWalk1, skeletonWalk2, skeletonWalk3, devilWalk1, devilWalk2, devilWalk3, devilWalk4, devilAttack1, devilAttack2, devilAttack3, devilAttack4;
 
 		public CharacterAssets(TextureAtlas atlas) {
 			run1 = atlas.findRegion("dwarfRun1");
@@ -134,6 +146,14 @@ public class Assets implements Disposable, AssetErrorListener {
 			skeletonWalk1 = atlas.findRegion("skeletonWalk1");
 			skeletonWalk2 = atlas.findRegion("skeletonWalk2");
 			skeletonWalk3 = atlas.findRegion("skeletonWalk3");
+			devilWalk1 = atlas.findRegion("devilWalk1");
+			devilWalk2 = atlas.findRegion("devilWalk2");
+			devilWalk3 = atlas.findRegion("devilWalk3");
+			devilWalk4 = atlas.findRegion("devilWalk4");
+			devilAttack1 = atlas.findRegion("devilAttack1");
+			devilAttack2 = atlas.findRegion("devilAttack2");
+			devilAttack3 = atlas.findRegion("devilAttack3");
+			devilAttack4 = atlas.findRegion("devilAttack4");
 		}
 	}
 	
@@ -231,14 +251,18 @@ public class Assets implements Disposable, AssetErrorListener {
 	}
 
 	public class Songs {
-		public final Music trackOne, trackTwo;
+		public final Music trackOne, trackTwo, trackThree, trackFour;
 		public final Sound swordHit, hit, swoosh;
 		public final ArrayList<Music> allSongs;
 		public final ArrayList<Sound> allSounds;
 		
+		public Music currentSong;
+		
 		public Songs(Music[] songs) {
 			trackOne = songs[0];
 			trackTwo = songs[1];
+			trackThree = songs[2];
+			trackFour = songs[3];
 			swordHit = Gdx.audio.newSound(Gdx.files.internal("sounds/swordHit.mp3"));
 			hit  = Gdx.audio.newSound(Gdx.files.internal("sounds/hit.mp3"));
 			swoosh  = Gdx.audio.newSound(Gdx.files.internal("sounds/swoosh.mp3"));
@@ -246,12 +270,15 @@ public class Assets implements Disposable, AssetErrorListener {
 			allSongs = new ArrayList<Music>();
 			allSongs.add(trackOne);
 			allSongs.add(trackTwo);
+			allSongs.add(trackThree);
+			allSongs.add(trackFour);
 			
 			allSounds = new ArrayList<Sound>();
 			allSounds.add(swordHit);
 			allSounds.add(hit);
 			allSounds.add(swoosh);
 		}
+	
 	}
 
 }

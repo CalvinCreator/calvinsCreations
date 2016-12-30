@@ -1,10 +1,11 @@
 package com.codesmith.scripting;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.codesmith.world.GameSprite;
 import com.codesmith.world.MovableMapObject;
 import com.codesmith.world.Player;
 
-public class MoveAction extends ScriptAction {
+public class MoveAction extends ScriptAction implements Spritable {
 	
 	float velX, velY;
 	float duration;
@@ -53,6 +54,15 @@ public class MoveAction extends ScriptAction {
 	public ScriptAction execute(MovableMapObject obj, float deltaTime) {
 		duration -= deltaTime;
 		obj.translateSpecial(velX * deltaTime, velY * deltaTime);
+		if(duration <= 0)
+			return next;
+		return this;
+	}
+
+	@Override
+	public ScriptAction execute(Sprite s, float deltaTime) {
+		duration -= deltaTime;
+		s.translate(velX * deltaTime, velY * deltaTime);
 		if(duration <= 0)
 			return next;
 		return this;

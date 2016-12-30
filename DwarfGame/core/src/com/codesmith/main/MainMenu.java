@@ -3,7 +3,9 @@ package com.codesmith.main;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -85,11 +87,11 @@ public class MainMenu extends CScreen implements Menuable {
 		options.setPosition(Gdx.graphics.getWidth() - options.getWidth() * 1.2f, options.getHeight() * 0.2f);
 		stage.addActor(options);
 
-		closeMountains = new MyActor(Assets.instance.backgrounds.findRegion("closeMountains"), 12, 2f);
-		farMountains = new MyActor(Assets.instance.backgrounds.findRegion("farMountain"), 4, 1);
-		farTrees = new MyActor(Assets.instance.backgrounds.findRegion("farTrees"), 39, 1.3f);
-		closeTrees = new MyActor(Assets.instance.backgrounds.findRegion("closeTrees"), 58, 1.3f);
-		bg = new MyActor(Assets.instance.backgrounds.findRegion("bg"), 0, 1);
+		closeMountains = new MyActor(Assets.instance.backgrounds.findRegion("closeMountains"), new Vector2(12, 0), 2f);
+		farMountains = new MyActor(Assets.instance.backgrounds.findRegion("farMountain"), new Vector2(4, 0), 1);
+		farTrees = new MyActor(Assets.instance.backgrounds.findRegion("farTrees"), new Vector2(39, 0), 1.3f);
+		closeTrees = new MyActor(Assets.instance.backgrounds.findRegion("closeTrees"), new Vector2(58, 0), 1.3f);
+		bg = new MyActor(Assets.instance.backgrounds.findRegion("bg"), new Vector2(0, 0), 1);
 
 		stage.addActor(optionsWindow);
 	}
@@ -129,7 +131,7 @@ public class MainMenu extends CScreen implements Menuable {
 	
 	@Override
 	public void render(float delta) {
-		stage.getBatch().setColor(1, 1, 1, 1);
+		stage.getBatch().setColor(1, 1, 1, alpha);
 		stage.getBatch().begin();
 		bg.act(delta);
 		bg.draw(stage.getBatch(), 1);
@@ -174,6 +176,10 @@ public class MainMenu extends CScreen implements Menuable {
 	public void dispose() {
 		stage.dispose();
 		skin.dispose();
+	}
+	
+	public Batch getBatch() {
+		return stage.getBatch();
 	}
 
 	@Override
