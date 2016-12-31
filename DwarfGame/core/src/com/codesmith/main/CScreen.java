@@ -15,6 +15,7 @@ public abstract class CScreen implements Screen {
 	public boolean touchDragged(int screenX, int screenY, int pointer){return false;}
 	public boolean mouseMoved(int screenX, int screenY){return false;}
 	public boolean scrolled(int amount){return false;}
+	
 	public abstract Batch getBatch();
 
 	@Override

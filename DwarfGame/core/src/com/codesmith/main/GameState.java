@@ -1,4 +1,4 @@
-package com.codesmith.main;
+	package com.codesmith.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -15,10 +15,9 @@ import com.codesmith.world.World;
 
 public class GameState extends CScreen implements Menuable {
 	public static final String TAG = GameState.class.getName();
-
+	
 	private World world;
 	public Renderer renderer;
-
 	private CameraHelper camHelper;
 
 	private Stage stage;
@@ -59,6 +58,16 @@ public class GameState extends CScreen implements Menuable {
 		world.update(deltaTime);
 		camHelper.update(deltaTime);
 	}
+	
+	@Override
+	public void render(float delta) {
+		update(delta);
+		if(showMenu)
+			stage.act(delta);
+		renderer.render();
+		if (showMenu)
+			stage.draw();
+	}
 
 	// Input
 	public void resolveInput(float deltaTime) {
@@ -71,13 +80,7 @@ public class GameState extends CScreen implements Menuable {
 			}
 		}
 	}
-
-	// Called when menu is closed
-	@Override
-	public void onClose(Window window) {
-		showMenu = false;
-	}
-
+	
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
@@ -88,6 +91,13 @@ public class GameState extends CScreen implements Menuable {
 		renderer.dispose();
 		world.dispose();
 		stage.dispose();
+	}
+	
+
+	// Called when menu is closed
+	@Override
+	public void onClose(Window window) {
+		showMenu = false;
 	}
 
 	@Override
@@ -150,16 +160,6 @@ public class GameState extends CScreen implements Menuable {
 	@Override
 	public void show() {
 
-	}
-
-	@Override
-	public void render(float delta) {
-		update(delta);
-		if(showMenu)
-			stage.act(delta);
-		renderer.render();
-		if (showMenu)
-			stage.draw();
 	}
 	
 	@Override

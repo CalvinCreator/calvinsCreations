@@ -22,16 +22,13 @@ public class Player extends GameSprite {
 	public static final String TAG = Player.class.getName();
 
 	private float stunnedCounter = 0;
-
 	private AnimationManager aManager;
-
 	private Inventory inventory;
-
 	private World world;
 
 	private Vector2 spawnLocation;
 	private String spawnMap;
-	private long lastAttack = 0;
+	private long lastAttack = 0;	
 	private float attackCooldown = 0.3f;
 
 	public Player(World world) {
@@ -187,7 +184,7 @@ public class Player extends GameSprite {
 				if (getState() != CLIMBING)
 					velocity.y = Constants.PLAYER_JUMP_SPEED;
 			}
-			// int prevState = currentState;
+			
 			if (onLadder()) {
 				if (Gdx.input.isKeyPressed(Keys.W)) {
 					velocity.y = Constants.PLAYER_MOVE_SPEED * deltaTime;
@@ -253,22 +250,42 @@ public class Player extends GameSprite {
 				(y - 1) * Constants.TILE_SIZE_PIXELS * Constants.TILE_SIZE);
 	}
 	
+	/**
+	 * @return
+	 * @uml.property  name="inventory"
+	 */
 	public Inventory getInventory() {
 		return inventory;
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="spawnMap"
+	 */
 	public String getSpawnMap() {
 		return spawnMap;
 	}
 	
+	/**
+	 * @return
+	 * @uml.property  name="spawnLocation"
+	 */
 	public Vector2 getSpawnLocation() {
 		return spawnLocation;
 	}
 	
+	/**
+	 * @param s
+	 * @uml.property  name="spawnMap"
+	 */
 	public void setSpawnMap(String s) {
 		spawnMap = s;
 	}
 	
+	/**
+	 * @param pos
+	 * @uml.property  name="spawnLocation"
+	 */
 	public void setSpawnLocation(Vector2 pos) {
 		spawnLocation = pos;
 	}

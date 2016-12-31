@@ -42,6 +42,7 @@ public abstract class Enemy extends GameSprite {
 		return damage;
 	}
 	
+	@Override
 	public boolean hit(Rectangle r, int damage, float magnitude) {
 		stunnedCounter = 0.5f;
 		velocity.y = Constants.PLAYER_JUMP_SPEED / 2;
@@ -51,7 +52,6 @@ public abstract class Enemy extends GameSprite {
 		else
 			velocity.x = magnitude;
 		health-=damage;
-		ai.addAgro(100);
 		return true;
 	}
 

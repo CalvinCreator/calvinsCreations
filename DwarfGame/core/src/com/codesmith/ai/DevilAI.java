@@ -11,20 +11,16 @@ import com.codesmith.world.Player;
 public class DevilAI implements AI {
 	
 	private Devil devil;
-	
 	private AnimationManager aManager;
-	
 	private float moveSpeed;
-	
 	private Player player;
 	
 	//can only attack once every 2 seconds
 	private long lastAttack = 0;
 	
 	private boolean attacking = false;
-	
+
 	private boolean agroed = false;
-	
 	private long soundTimer = Long.MAX_VALUE;
 	
 	public DevilAI(float moveSpeed, Devil d, AnimationManager a, Player p) {

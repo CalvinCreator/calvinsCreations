@@ -1,4 +1,4 @@
-package com.codesmith.main;
+	package com.codesmith.main;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -23,14 +23,17 @@ public class MainMenu extends CScreen implements Menuable {
 
 	private Stage stage;
 	private Skin skin;
-
 	private OptionsWindow optionsWindow;
 	
-	private Actor closeMountains, closeTrees, farMountains, farTrees, bg;
-	
-	private BitmapFont defaultFont;
-	
-	private TextButton options, newGameButton, quit;
+	private Actor closeMountains;
+	private Actor closeTrees;
+	private Actor farMountains;
+	private Actor farTrees;
+	private Actor bg;
+	private BitmapFont defaultFont;	
+	private TextButton options;
+	private TextButton newGameButton;
+	private TextButton quit;
 
 	public MainMenu() {
 		

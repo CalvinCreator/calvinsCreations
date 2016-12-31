@@ -11,7 +11,7 @@ public class ProximityAction extends ScriptAction implements Spritable {
 	private GameSprite focus = null;
 	private float distance;
 	private Vector2 location = null;
-	
+		
 	public ProximityAction(GameSprite target, float distance) {
 		focus = target;
 		this.distance = distance;

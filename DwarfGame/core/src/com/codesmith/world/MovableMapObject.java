@@ -1,4 +1,4 @@
-package com.codesmith.world;
+		package com.codesmith.world;
 
 import java.util.Iterator;
 
@@ -15,9 +15,13 @@ import com.codesmith.utils.Constants;
 
 public class MovableMapObject extends Sprite {
 	
+
 	private ScriptAction action;
 	private Rectangle bounds; 
-	public int id, scriptId;
+	public int id;
+	public int scriptId;
+	
+	private boolean isPlaying = false;
 	
 	public MovableMapObject(MapObject obj, Player player, World world) {
 		if((Float)obj.getProperties().get("width") != 16)
@@ -39,6 +43,21 @@ public class MovableMapObject extends Sprite {
 	public void update(float deltaTime) {
 		if(action != null)
 			action = action.execute(this, deltaTime);
+		
+		if(action instanceof MoveAction && id == WorldRectangle.MOVABLE_MAP_OBJECT) {
+			if (((MoveAction) action).getVel().len() != 0) {
+				if(!isPlaying) {
+					Assets.instance.songs.stoneScrape.play();
+					isPlaying = true;
+				}
+			} else if(isPlaying) {
+				Assets.instance.songs.stoneScrape.stop();
+				isPlaying = false;
+			}
+		} else if(isPlaying) {
+			Assets.instance.songs.stoneScrape.stop();
+			isPlaying = false;
+		}
 	}
 	
 	public void draw(SpriteBatch batch) {

@@ -1,4 +1,4 @@
-package com.codesmith.main;
+	package com.codesmith.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;

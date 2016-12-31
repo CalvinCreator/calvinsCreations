@@ -31,30 +31,33 @@ public class Renderer {
 	private World world;
 	
 	private OrthogonalTiledMapRenderer mapRenderer;
-	private OrthographicCamera camera, guiCamera;
-	private SpriteBatch batch;
+	private OrthographicCamera camera;
+	private OrthographicCamera guiCamera;
 	private CameraHelper camHelper;
+	private SpriteBatch batch;
 	
 	public boolean debug = false;
 	
 	private float alpha = 1;
 	
-	ShapeRenderer r = new ShapeRenderer();
+	private ShapeRenderer r = new ShapeRenderer();
 	
-	private int[] layersBehindMovableWalls, otherBackgroundLayers, foregroundLayers;
+	private int[] layersBehindMovableWalls;
+	private int[] otherBackgroundLayers;
+	private int[] foregroundLayers;
 	
-	public Renderer(World world, CameraHelper camHelper) {
-		this.world = world;
-		mapRenderer = new OrthogonalTiledMapRenderer(world.getMap(), Constants.TILE_SIZE);
-		batch = new SpriteBatch();
-		camera = new OrthographicCamera(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT);
-		this.camHelper = camHelper;
-		camHelper.setCamera(camera, world);
-		camHelper.apply();
-		guiCamera = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-		guiCamera.position.set(0, 0, 0);
-		guiCamera.update();
-	}
+		public Renderer(World world, CameraHelper camHelper) {
+			this.world = world;
+			mapRenderer = new OrthogonalTiledMapRenderer(world.getMap(), Constants.TILE_SIZE);
+			batch = new SpriteBatch();
+			camera = new OrthographicCamera(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT);
+			this.camHelper = camHelper;
+			camHelper.setCamera(camera, world);
+			camHelper.apply();
+			guiCamera = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+			guiCamera.position.set(0, 0, 0);
+			guiCamera.update();
+		}
 	
 	public void render() {
 		camHelper.apply();
@@ -62,11 +65,9 @@ public class Renderer {
 		mapRenderer.getBatch().setColor(1, 1, 1, alpha);
 		batch.setProjectionMatrix(camera.combined);
 		batch.setColor(1, 1, 1, alpha);
-		r.setProjectionMatrix(camera.combined);
 		
 		//Draw every layer behind sprites
 		mapRenderer.render(layersBehindMovableWalls);
-		batch.setColor(1, 1, 1, alpha);
 		batch.begin();
 		for(MovableMapObject m : world.getMovableMapObjects())
 			m.draw(batch);
@@ -101,6 +102,7 @@ public class Renderer {
 		batch.end(); 
 		
 		if(debug) {
+			r.setProjectionMatrix(camera.combined);
 			r.setColor(0, 1, 0, alpha);
 			r.begin(ShapeType.Line);
 				for(Rectangle re: world.getRects())
@@ -109,13 +111,6 @@ public class Renderer {
 		}
 	}
 	
-	public void draw(Texture t, float alpha) {
-		batch.setProjectionMatrix(camera.combined);
-		batch.setColor(1, 1, 1, alpha);
-		batch.begin();
-		batch.draw(t, 0, 0);
-		batch.end();
-	}
 	
 	private void drawGui(SpriteBatch batch) {
 		for(int i = 0; i < world.getPlayer().getMaxHealth(); i++) 
@@ -124,7 +119,7 @@ public class Renderer {
 			else
 				batch.draw(Assets.instance.icons.emptyHeart, 3 + 22 * i, Constants.VIEWPORT_GUI_HEIGHT - 20);
 	}
-	
+
 	public void setAlpha(float a) {
 		alpha = a;
 	}

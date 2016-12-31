@@ -1,6 +1,5 @@
 package com.codesmith.scripting;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.codesmith.world.GameSprite;
 import com.codesmith.world.MovableMapObject;
 

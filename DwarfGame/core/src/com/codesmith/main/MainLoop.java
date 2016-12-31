@@ -18,11 +18,12 @@ public class MainLoop extends Game implements InputProcessor {
 	public static final String TAG = MainLoop.class.getName();
 	
 	//for fade in/out transitions
-	float d1, d2;
-	float elapsed = 0;
-	Texture screen = null;
-	String transition = "";
-	CScreen next;
+	private float d1;
+	private float d2;
+	private float elapsed = 0;
+	private Texture screen = null;
+	private String transition = "";
+	private CScreen next;
 	
 	@Override
 	public void create () {
@@ -39,7 +40,7 @@ public class MainLoop extends Game implements InputProcessor {
 		if(transition.equals("")) {
 			Gdx.gl.glClearColor(0.365f, 0.592f, 0.553f, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-			getScreen().render(Gdx.graphics.getDeltaTime() * 1f);
+			getScreen().render(Gdx.graphics.getDeltaTime());
 		} else if(transition.indexOf("fadeOut") != -1) {
 			fadeOut(Gdx.graphics.getDeltaTime());
 		} else if(transition.indexOf("fadeIn") != -1) {
@@ -95,6 +96,7 @@ public class MainLoop extends Game implements InputProcessor {
 			if(transition.equals("fade")) transition = "";
 					
 		}
+
 	}
 	
 	@Override
@@ -117,12 +119,6 @@ public class MainLoop extends Game implements InputProcessor {
 		this.d2 = d2;
 		next = nextScreen;
 	}
-	
-	@Override
-	public void setScreen(Screen s) {
-		super.setScreen(s);
-	}
-
 	
 	@Override
 	public boolean keyDown(int keycode) {

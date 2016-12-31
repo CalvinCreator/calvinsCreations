@@ -47,6 +47,10 @@ public class ItemSprite extends Sprite {
 		action = a;
 	}
 	
+	/**
+	 * @return
+	 * @uml.property  name="id"
+	 */
 	public int getId() {
 		return id;
 	}

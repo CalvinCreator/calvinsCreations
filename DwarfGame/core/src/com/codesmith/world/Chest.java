@@ -12,10 +12,21 @@ import com.codesmith.utils.Constants;
 
 public class Chest extends Sprite {
 	
+	/**
+	 * @uml.property  name="script"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	private ScriptAction script;
 	
+	/**
+	 * @uml.property  name="inventory" multiplicity="(0 -1)" dimension="1"
+	 */
 	private int[] inventory;
 	
+	/**
+	 * @uml.property  name="ani"
+	 * @uml.associationEnd  readOnly="true"
+	 */
 	private Animation ani;
 	
 	//TODO: FINISH CHEST

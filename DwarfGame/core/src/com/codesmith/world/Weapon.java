@@ -8,13 +8,35 @@ import com.codesmith.utils.Constants;
 
 public class Weapon {
 
+	/**
+	 * @uml.property  name="fCount"
+	 */
 	private int fCount = -1;
+	/**
+	 * @uml.property  name="lastAttack"
+	 */
 	private long lastAttack = 0;
+	/**
+	 * @uml.property  name="delta"
+	 */
 	private float delta = 0.08f;
 
+	/**
+	 * @uml.property  name="damage"
+	 */
 	private int damage;
+	/**
+	 * @uml.property  name="range"
+	 */
 	private float range;
+	/**
+	 * @uml.property  name="id"
+	 */
 	private int id;
+	/**
+	 * @uml.property  name="img"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	private TextureRegion img;
 
 	public Weapon(int id) {
@@ -27,6 +49,10 @@ public class Weapon {
 		}
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="id"
+	 */
 	public int getId() {
 		return id;
 	}
@@ -37,6 +63,10 @@ public class Weapon {
 		return damage;
 	}
 	
+	/**
+	 * @return
+	 * @uml.property  name="range"
+	 */
 	public float getRange() {
 		return range;
 	}

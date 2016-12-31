@@ -9,21 +9,27 @@ import com.codesmith.world.MovableMapObject;
 
 public class FadeAction extends ScriptAction {
 	
-	private Renderer r;
+	/**
+	 * @uml.property  name="r"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	
-	public FadeAction(Renderer r, float d1, float d2) {
-		this.r = r;
+	private float d1, d2;
+	
+	public FadeAction(float d1, float d2) {
+		this.d1 = d1;
+		this.d2 = d2;
 	}
 
 	@Override
 	public ScriptAction execute(GameSprite target, float deltaTime) {
-		((MainLoop)(Gdx.app.getApplicationListener())).fadeTransition(new CreditScreen(), 4, 1);
+		((MainLoop)(Gdx.app.getApplicationListener())).fadeTransition(new CreditScreen(), d1, d2);
 		return next;
 	}
 
 	@Override
 	public ScriptAction execute(MovableMapObject obj, float deltaTime) {
-		((MainLoop)(Gdx.app.getApplicationListener())).fadeTransition(new CreditScreen(), 4, 1);
+		((MainLoop)(Gdx.app.getApplicationListener())).fadeTransition(new CreditScreen(), d1, d2);
 		return next;
 	}
 

@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.codesmith.graphics.Assets;
 import com.codesmith.graphics.ParticleAnimation;
 import com.codesmith.main.Renderer;
 import com.codesmith.scripting.ScriptAction;
@@ -20,6 +21,7 @@ import com.codesmith.utils.Constants;
 public class World {
 	public static final String TAG = World.class.getName();
 
+
 	private TiledMap map;
 	private Player player;
 	private ArrayList<Enemy> enemies;
@@ -27,12 +29,9 @@ public class World {
 	private ArrayList<ParticleAnimation> pAnimations;
 	private ArrayList<MovableMapObject> movableMapObjects;
 	private ArrayList<Gate> gates;
-	private ArrayList<Chest> chests;
 	private ArrayList<ItemSprite> items;
 	private Renderer renderer;
 	private String currentMap = "";
-	private float deltaTime = 0;
-	private boolean transitioning = false;
 
 	public World() {
 		player = new Player(this);
@@ -41,12 +40,10 @@ public class World {
 		pAnimations = new ArrayList<ParticleAnimation>();
 		movableMapObjects = new ArrayList<MovableMapObject>();
 		gates = new ArrayList<Gate>();
-		chests = new ArrayList<Chest>();
 		items = new ArrayList<ItemSprite>();
 	}
 
 	public void update(float deltaTime) {
-		this.deltaTime = deltaTime;
 		if(player.getHealth() <= 0) {
 			setMap(player.getSpawnMap(), player.getSpawnLocation());
 			player.setPosition(player.getSpawnLocation().x, player.getSpawnLocation().y);
@@ -63,11 +60,6 @@ public class World {
 		
 		for(ItemSprite s: items)
 			s.update(deltaTime);
-		
-		//TODO: chests
-		/*
-		for(Chest c: chests)
-			c.update(deltaTime); */
 
 		// Update all sprites
 		player.update(deltaTime);
@@ -94,9 +86,9 @@ public class World {
 		for(MovableMapObject o : movableMapObjects)
 			rects.add(new WorldRectangle(o.getBoundingRectangle(), o.id, o));
 		for (Gate g : gates)
-			rects.add(new WorldRectangle(g.getCollisionBox(), WorldRectangle.GATE, g));
+			rects.add(new WorldRectangle(g.getBoundingRectangle(), WorldRectangle.GATE, g));
 		for (Enemy e : enemies) {
-			e.setPosition(resolveMapCollisions(rects, e));
+			e.setPosition(resolveMapCollisions(rects, e, deltaTime));
 		}
 		for (Enemy e : enemies) {
 			int id = e instanceof Devil ? WorldRectangle.BOSS : WorldRectangle.ENEMY;
@@ -119,7 +111,7 @@ public class World {
 				rects.add(wr);
 			}
 		}
-		player.setPosition(resolveMapCollisions(rects, player));
+		player.setPosition(resolveMapCollisions(rects, player, deltaTime));
 
 	}
 
@@ -145,8 +137,13 @@ public class World {
 		platforms = new ArrayList<MovingPlatform>();
 		enemies = new ArrayList<Enemy>();
 		movableMapObjects = new ArrayList<MovableMapObject>();
-		chests = new ArrayList<Chest>();
 		items = new ArrayList<ItemSprite>();
+		if(Assets.instance.songs.currentSong != Assets.instance.songs.trackTwo) {
+			Assets.instance.songs.currentSong.stop();
+			Assets.instance.songs.trackTwo.setPosition(0);
+			Assets.instance.songs.trackTwo.play();
+			Assets.instance.songs.currentSong = Assets.instance.songs.trackTwo;
+		}
 		
 		int health = player.getHealth();
 		player = new Player(this);
@@ -284,7 +281,7 @@ public class World {
 		return map;
 	}
 
-	public Vector2 resolveMapCollisions(HashSet<WorldRectangle> rects, GameSprite s) {
+	public Vector2 resolveMapCollisions(HashSet<WorldRectangle> rects, GameSprite s, float deltaTime) {
 		Rectangle p = s.getBoundingRectangle();
 		boolean falling = true;
 		int prevState = s.getState();
@@ -299,7 +296,7 @@ public class World {
 					&& r.y < p.y + p.height + s.velocity.y && r.height + r.y > p.y + s.velocity.y) {
 				
 				//Collide with anything except Gate objects or moving ladders
-				if (r.id == WorldRectangle.GATE) {
+				if (r.id == WorldRectangle.GATE && s instanceof Player) {
 					((Gate)r.getParent()).collide = true;
 					if(((Gate)r.getParent()).open() && Gdx.input.isKeyPressed(Keys.S)) {
 						String destination = ((Gate)r.getParent()).getDestination();
@@ -330,9 +327,9 @@ public class World {
 								p.y = plat.getBoundingRectangle().y + plat.getBoundingRectangle().height;
 								s.velocity.y = 0;
 								p.y *= Constants.TILE_SIZE;
-								player.setState(Player.IDLE);
+								s.setState(GameSprite.IDLE);
 								Vector2 v = new Vector2(p.x + s.velocity.x, p.y + s.velocity.y);
-								s.velocity.y = -plat.getSpeed() * deltaTime * 1.0004f;
+								s.velocity.y = -plat.getSpeed() * deltaTime * 1.004f;
 								return v;
 							}
 						}
@@ -381,7 +378,7 @@ public class World {
 									p.y *= Constants.TILE_SIZE;
 									player.setState(Player.IDLE);
 									Vector2 v = new Vector2(p.x + s.velocity.x, p.y + s.velocity.y);
-									s.velocity.y = -plat.getSpeed() * deltaTime * 1.0004f;
+									s.velocity.y = -plat.getSpeed() * deltaTime * 1.004f;
 									return v;
 								}
 							}
@@ -448,7 +445,7 @@ public class World {
 									p.y *= Constants.TILE_SIZE;
 									player.setState(Player.IDLE);
 									Vector2 v = new Vector2(p.x + s.velocity.x, p.y + s.velocity.y);
-									s.velocity.y = -plat.getSpeed() * deltaTime * 1.0004f;
+									s.velocity.y = -plat.getSpeed() * deltaTime * 1.004f;
 									return v;
 								}
 							}
@@ -521,7 +518,7 @@ public class World {
 			rects.add(r);
 		}
 		for(Gate g : gates) {
-			Rectangle r = g.getCollisionBox();
+			Rectangle r = g.getBoundingRectangle();
 			r.x *= Constants.TILE_SIZE;
 			r.y *= Constants.TILE_SIZE;
 			r.width *= Constants.TILE_SIZE;
@@ -543,6 +540,10 @@ public class World {
 		return platforms;
 	}
 	
+	/**
+	 * @return
+	 * @uml.property  name="renderer"
+	 */
 	public Renderer getRenderer() {
 		return renderer;
 	}
@@ -551,6 +552,10 @@ public class World {
 		return gates;
 	}
 	
+	/**
+	 * @param r
+	 * @uml.property  name="renderer"
+	 */
 	public void setRenderer(Renderer r) {
 		renderer = r;
 	}
@@ -559,8 +564,5 @@ public class World {
 		return items;
 	}
 	
-	public ArrayList<Chest> getChests() {
-		return chests;
-	}
 
 }

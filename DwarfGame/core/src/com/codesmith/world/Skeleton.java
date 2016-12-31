@@ -31,11 +31,12 @@ public class Skeleton extends Enemy {
 	public void update(float deltaTime) {
 		if(stunnedCounter > 0)
 			stunnedCounter -= deltaTime;
-
+		
 		velocity.x += acceleration.x * deltaTime;
 		velocity.y += acceleration.y * deltaTime;
-		velocity.y = MathUtils.clamp(velocity.y, -Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
-		
+		velocity.y = MathUtils.clamp(velocity.y, -Constants.PLAYER_MAX_SPEED, 
+									Constants.PLAYER_MAX_SPEED);
+
 		if(action == null || action instanceof ProximityAction) {
 			ai.update(player.getPosition(), this.getPosition());
 			if(stunnedCounter > 0)

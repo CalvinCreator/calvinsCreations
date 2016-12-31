@@ -8,7 +8,11 @@ import com.codesmith.world.MovableMapObject;
 
 public class MusicChangeAction extends ScriptAction implements Spritable, Updatable {
 	
-	public Music m;
+	/**
+	 * @uml.property  name="m"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
+	private Music m;
 	
 	public MusicChangeAction(Music m) {
 		this.m = m;
@@ -17,6 +21,7 @@ public class MusicChangeAction extends ScriptAction implements Spritable, Updata
 	@Override
 	public ScriptAction execute(GameSprite target, float deltaTime) {
 		Assets.instance.songs.currentSong.stop();
+		m.setPosition(0);
 		m.play();
 		Assets.instance.songs.currentSong = m;
 		return next;

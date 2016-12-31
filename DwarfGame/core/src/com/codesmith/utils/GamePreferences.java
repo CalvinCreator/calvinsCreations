@@ -8,11 +8,27 @@ public class GamePreferences {
 	
 	public static final GamePreferences instance = new GamePreferences();
 	
+	/**
+	 * @uml.property  name="sound"
+	 */
 	public boolean sound;
+	/**
+	 * @uml.property  name="music"
+	 */
 	public boolean music;
+	/**
+	 * @uml.property  name="volSound"
+	 */
 	public float volSound;
+	/**
+	 * @uml.property  name="volMusic"
+	 */
 	public float volMusic;
 	
+	/**
+	 * @uml.property  name="prefs"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	private Preferences prefs;
 	
 	private GamePreferences() {

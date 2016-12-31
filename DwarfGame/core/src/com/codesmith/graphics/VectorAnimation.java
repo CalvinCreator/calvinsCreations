@@ -6,7 +6,15 @@ import com.badlogic.gdx.math.Vector2;
 
 public class VectorAnimation extends Animation {
 	
+	/**
+	 * @uml.property  name="frames"
+	 * @uml.associationEnd  multiplicity="(0 -1)"
+	 */
 	private TextureRegion[] frames;
+	/**
+	 * @uml.property  name="v"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	private Vector2 v;
 
 	public VectorAnimation(float frameDuration, TextureRegion[] keyFrames, Vector2 v) {

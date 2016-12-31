@@ -8,10 +8,28 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class MyActor extends Actor {
 	
+	/**
+	 * @uml.property  name="tex"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	private TextureRegion tex;
-	private float x, y;
-	private float velX, velY;
+	/**
+	 * @uml.property  name="x"
+	 */
+	private float x;
+	/**
+	 * @uml.property  name="y"
+	 */
+	private float y;
+	/**
+	 * @uml.property  name="velX"
+	 */
+	private float velX;
 	//private float scale;
+	/**
+	 * @uml.property  name="velY"
+	 */
+	private float velY;
 	
 	public MyActor(TextureRegion r, Vector2 vel, float scale) {
 		tex = r;

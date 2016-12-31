@@ -1,14 +1,25 @@
-package com.codesmith.scripting;
+	package com.codesmith.scripting;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
 import com.codesmith.world.GameSprite;
 import com.codesmith.world.MovableMapObject;
 import com.codesmith.world.Player;
 
 public class MoveAction extends ScriptAction implements Spritable {
 	
-	float velX, velY;
-	float duration;
+	/**
+	 * @uml.property  name="velX"
+	 */
+	private float velX;
+	/**
+	 * @uml.property  name="velY"
+	 */
+	private float velY;
+	/**
+	 * @uml.property  name="duration"
+	 */
+	private float duration;
 	
 	public MoveAction(float x, float y, float time) {
 		velX = x / time;
@@ -66,6 +77,10 @@ public class MoveAction extends ScriptAction implements Spritable {
 		if(duration <= 0)
 			return next;
 		return this;
+	}
+	
+	public Vector2 getVel() {
+		return new Vector2(velX, velY);
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.codesmith.scripting;
 
 import java.util.LinkedList;
+import java.util.Queue;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -30,7 +31,7 @@ public abstract class ScriptAction {
 	}
 	
 	public static ScriptAction loadScript(String file, World world) throws Exception {
-		LinkedList<String> q = new LinkedList<String>();
+		Queue<String> q = new LinkedList<String>();
 		ScriptAction action = new TempAction();
 		
 		while(file != "") {
@@ -68,7 +69,7 @@ public abstract class ScriptAction {
 				action.add(new DeathAction(d));
 				break;
 			case "fadeAction": 
-				action.add(new FadeAction(world.getRenderer(), Float.valueOf(args[0]), Float.valueOf(args[1])));
+				action.add(new FadeAction(Float.valueOf(args[0]), Float.valueOf(args[1])));
 				break;
 			case "musicChangeAction":
 				Music m = null;

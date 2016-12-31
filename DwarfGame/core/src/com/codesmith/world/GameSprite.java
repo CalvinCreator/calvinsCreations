@@ -10,16 +10,23 @@ import com.codesmith.utils.Constants;
 
 public abstract class GameSprite extends Sprite {
 	
-	protected Vector2 velocity, acceleration;
+	protected Vector2 velocity;
+	protected Vector2 acceleration;
 	public boolean right = true;
 	protected AnimationManager aManager;
 	protected int currentState = IDLE;
-	protected int health, maxHealth;
-	public static final int IDLE = 0, RUNNING = 1, FALLING = 2, CLIMBING = 3, ATTACKING = 4;
+	protected int health;
+
+	protected int maxHealth;
+	public static final int IDLE = 0;
+	public static final int RUNNING = 1;
+	public static final int FALLING = 2;
+	public static final int CLIMBING = 3;
+	public static final int ATTACKING = 4;
 	
 	protected ScriptAction action = null;
-	
-	protected float widthScale, heightScale;
+	protected float widthScale;
+	protected float heightScale;
 	
 	public GameSprite() {
 		velocity = new Vector2(0, 0);
