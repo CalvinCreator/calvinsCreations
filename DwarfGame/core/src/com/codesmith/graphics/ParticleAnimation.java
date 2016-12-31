@@ -7,10 +7,33 @@ import com.badlogic.gdx.math.Vector2;
 
 public class ParticleAnimation {
 
+	/**
+	 * @uml.property  name="animation"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	private Animation animation;
+	/**
+	 * @uml.property  name="counter"
+	 */
 	private float counter;
+	/**
+	 * @uml.property  name="stateTime"
+	 */
 	private float stateTime = 0;
-	private Vector2 pos, bounds;
+	/**
+	 * @uml.property  name="pos"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
+	private Vector2 pos;
+	/**
+	 * @uml.property  name="bounds"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
+	private Vector2 bounds;
+	/**
+	 * @uml.property  name="vel"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	private Vector2 vel;
 
 	public ParticleAnimation(String key, Vector2 pos, Vector2 bounds) {

@@ -1,7 +1,17 @@
 <proximityAction>
-	<W,20>
+	<1,25>
 <moveAction>
-	<35, 0, 3>
+	<40, 0, 4>
 <moveAction>
 	<0,0,0.5>
+<proximityAction>
+	<560,324, 5>
+<moveAction>
+	<10, 0, 3>
+<moveAction>
+	<0, 0, 0.1>
+<fadeAction>
+	<4,4>
+<moveAction>
+	<0, 0, 10>
 	

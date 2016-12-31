@@ -4,8 +4,23 @@ import com.badlogic.gdx.math.Vector2;
 
 public class BasicAI implements AI {
 	
-	private Vector2 target, position;
+	/**
+	 * @uml.property  name="target"
+	 * @uml.associationEnd  
+	 */
+	private Vector2 target;
+	/**
+	 * @uml.property  name="position"
+	 * @uml.associationEnd  
+	 */
+	private Vector2 position;
+	/**
+	 * @uml.property  name="moveSpeed"
+	 */
 	private float moveSpeed;
+	/**
+	 * @uml.property  name="agro"
+	 */
 	private int agro = 0;
 	
 	public BasicAI(float moveSpeed) {
@@ -20,9 +35,7 @@ public class BasicAI implements AI {
 	@Override
 	public Vector2 getVelocity(float deltaTime) {
 		float speed = moveSpeed;
-		if(target.dst(position) > 50) { 
-			agro = 0;
-		} else if(target.dst(position) < 30)
+		if(target.dst(position) < 30)
 			agro++;
 		if(agro == 0)
 			speed = 0;

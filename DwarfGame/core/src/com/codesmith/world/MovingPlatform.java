@@ -8,12 +8,19 @@ import com.codesmith.utils.Constants;
 
 public class MovingPlatform {
 	
-	public float x, y;
-	public float speed;
-	public int width, height;
+	private float x;
+	private float y;
+	private float speed;
+	private int width;
+	private int height;
+
 	public float delta;
+	/**
+	 * @uml.property  name="path"
+	 */
 	public int path; //0=sideways 1=vertical
-	private float b1, b2;
+	private float b1;
+	private float b2;
 	private boolean right = true; //or up
 	
 	public MovingPlatform(RectangleMapObject r) throws Exception {

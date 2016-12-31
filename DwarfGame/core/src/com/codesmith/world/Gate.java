@@ -10,7 +10,7 @@ import com.codesmith.utils.Constants;
 
 public class Gate {
 
-	private int id;
+
 	private Animation animation;
 	private String map;
 	private Vector2 position;
@@ -19,7 +19,6 @@ public class Gate {
 	public boolean collide = false;
 
 	public Gate(int id, String map, Vector2 position, String destination) {
-		this.id = id;
 		this.map = map;
 		this.position = position;
 		this.destination = destination;
@@ -33,6 +32,10 @@ public class Gate {
 		}
 	}
 	
+	/**
+	 * @return
+	 * @uml.property  name="destination"
+	 */
 	public String getDestination() {
 		return destination;
 	}
@@ -53,6 +56,10 @@ public class Gate {
 		return stateTime >= animation.getAnimationDuration();
 	}
 	
+	/**
+	 * @return
+	 * @uml.property  name="map"
+	 */
 	public String getMap() {
 		return map;
 	}
@@ -61,7 +68,7 @@ public class Gate {
 		batch.draw(animation.getKeyFrame(stateTime), position.x * Constants.TILE_SIZE, position.y * Constants.TILE_SIZE, animation.getKeyFrame(stateTime).getRegionWidth() * Constants.SCALE, animation.getKeyFrame(stateTime).getRegionHeight() * Constants.SCALE);
 	}
 	
-	public Rectangle getCollisionBox() {
+	public Rectangle getBoundingRectangle() {
 		float width = animation.getKeyFrame(stateTime).getRegionWidth() * Constants.SCALE / Constants.TILE_SIZE;
 		float height = animation.getKeyFrame(stateTime).getRegionHeight() * Constants.SCALE / Constants.TILE_SIZE;
 		return new Rectangle(position.x + width * 0.2f, position.y, width * 0.6f, height * 0.95f);

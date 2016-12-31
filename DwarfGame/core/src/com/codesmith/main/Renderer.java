@@ -1,53 +1,70 @@
 package com.codesmith.main;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.codesmith.graphics.Assets;
 import com.codesmith.graphics.ParticleAnimation;
 import com.codesmith.utils.CameraHelper;
 import com.codesmith.utils.Constants;
 import com.codesmith.world.Enemy;
 import com.codesmith.world.Gate;
+import com.codesmith.world.ItemSprite;
 import com.codesmith.world.MovableMapObject;
 import com.codesmith.world.MovingPlatform;
 import com.codesmith.world.World;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 
 public class Renderer {
 	public static final String TAG = Renderer.class.getName();
 	
 	private World world;
 	
-	private TiledMapRenderer mapRenderer;
-	private OrthographicCamera camera, guiCamera;
-	private SpriteBatch batch;
+	private OrthogonalTiledMapRenderer mapRenderer;
+	private OrthographicCamera camera;
+	private OrthographicCamera guiCamera;
 	private CameraHelper camHelper;
+	private SpriteBatch batch;
 	
-	ShapeRenderer r = new ShapeRenderer();
+	public boolean debug = false;
 	
-	private int[] layersBehindMovableWalls, otherBackgroundLayers, foregroundLayers;
+	private float alpha = 1;
 	
-	public Renderer(World world, CameraHelper camHelper) {
-		this.world = world;
-		mapRenderer = new OrthogonalTiledMapRenderer(world.getMap(), Constants.TILE_SIZE);
-		batch = new SpriteBatch();
-		camera = new OrthographicCamera(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT);
-		this.camHelper = camHelper;
-		camHelper.setCamera(camera, world);
-		camHelper.apply();
-		guiCamera = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-		guiCamera.position.set(0, 0, 0);
-		guiCamera.update();
-	}
+	private ShapeRenderer r = new ShapeRenderer();
+	
+	private int[] layersBehindMovableWalls;
+	private int[] otherBackgroundLayers;
+	private int[] foregroundLayers;
+	
+		public Renderer(World world, CameraHelper camHelper) {
+			this.world = world;
+			mapRenderer = new OrthogonalTiledMapRenderer(world.getMap(), Constants.TILE_SIZE);
+			batch = new SpriteBatch();
+			camera = new OrthographicCamera(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT);
+			this.camHelper = camHelper;
+			camHelper.setCamera(camera, world);
+			camHelper.apply();
+			guiCamera = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+			guiCamera.position.set(0, 0, 0);
+			guiCamera.update();
+		}
 	
 	public void render() {
 		camHelper.apply();
 		mapRenderer.setView(camera);
+		mapRenderer.getBatch().setColor(1, 1, 1, alpha);
 		batch.setProjectionMatrix(camera.combined);
-		r.setProjectionMatrix(camera.combined);
+		batch.setColor(1, 1, 1, alpha);
 		
 		//Draw every layer behind sprites
 		mapRenderer.render(layersBehindMovableWalls);
@@ -57,11 +74,14 @@ public class Renderer {
 		batch.end();
 		mapRenderer.render(otherBackgroundLayers);
 		
+		batch.setColor(1, 1, 1, alpha);
 		batch.begin();
-		
 		//Draw moving platforms
 		for(MovingPlatform p : world.getMovingPlatforms()) 
 			p.draw(batch);
+		
+		for(ItemSprite s: world.getItems())
+			s.draw(batch);
 		
 		for(Gate g : world.getGates())
 			g.draw(batch);
@@ -71,6 +91,7 @@ public class Renderer {
 		for(Enemy e : world.getEnemies())
 			e.draw(batch);
 		world.getPlayer().draw(batch);
+		
 		batch.end();
 		
 		//Draw ever layer in front of player
@@ -78,13 +99,18 @@ public class Renderer {
 		batch.setProjectionMatrix(guiCamera.combined);
 		batch.begin();
 		drawGui(batch);
-		batch.end();
+		batch.end(); 
 		
-		r.begin(ShapeType.Line);
-		
-		r.end();
-
+		if(debug) {
+			r.setProjectionMatrix(camera.combined);
+			r.setColor(0, 1, 0, alpha);
+			r.begin(ShapeType.Line);
+				for(Rectangle re: world.getRects())
+					r.rect(re.x, re.y, re.width, re.height);
+			r.end();
+		}
 	}
+	
 	
 	private void drawGui(SpriteBatch batch) {
 		for(int i = 0; i < world.getPlayer().getMaxHealth(); i++) 
@@ -92,6 +118,10 @@ public class Renderer {
 				batch.draw(Assets.instance.icons.fullHeart, 3 + 22 * i, Constants.VIEWPORT_GUI_HEIGHT - 20);
 			else
 				batch.draw(Assets.instance.icons.emptyHeart, 3 + 22 * i, Constants.VIEWPORT_GUI_HEIGHT - 20);
+	}
+
+	public void setAlpha(float a) {
+		alpha = a;
 	}
 	
 	public void updateMapData() throws Exception {
@@ -132,6 +162,10 @@ public class Renderer {
 		guiCamera.viewportWidth = Constants.VIEWPORT_GUI_HEIGHT / height * width;
 		guiCamera.position.set(guiCamera.viewportWidth / 2, guiCamera.viewportHeight / 2, 0);
 		guiCamera.update();
+	}
+	
+	public Batch getBatch() {
+		return batch;
 	}
 	
 	public void dispose() {

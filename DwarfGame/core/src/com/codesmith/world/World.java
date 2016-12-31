@@ -2,6 +2,7 @@ package com.codesmith.world;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.maps.MapObject;
@@ -11,15 +12,15 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.codesmith.graphics.Assets;
 import com.codesmith.graphics.ParticleAnimation;
 import com.codesmith.main.Renderer;
-import com.codesmith.scripting.JumpAction;
-import com.codesmith.scripting.MoveAction;
 import com.codesmith.scripting.ScriptAction;
 import com.codesmith.utils.Constants;
 
 public class World {
 	public static final String TAG = World.class.getName();
+
 
 	private TiledMap map;
 	private Player player;
@@ -28,9 +29,9 @@ public class World {
 	private ArrayList<ParticleAnimation> pAnimations;
 	private ArrayList<MovableMapObject> movableMapObjects;
 	private ArrayList<Gate> gates;
+	private ArrayList<ItemSprite> items;
 	private Renderer renderer;
 	private String currentMap = "";
-	private float deltaTime = 0;
 
 	public World() {
 		player = new Player(this);
@@ -39,10 +40,10 @@ public class World {
 		pAnimations = new ArrayList<ParticleAnimation>();
 		movableMapObjects = new ArrayList<MovableMapObject>();
 		gates = new ArrayList<Gate>();
+		items = new ArrayList<ItemSprite>();
 	}
 
 	public void update(float deltaTime) {
-		this.deltaTime = deltaTime;
 		if(player.getHealth() <= 0) {
 			setMap(player.getSpawnMap(), player.getSpawnLocation());
 			player.setPosition(player.getSpawnLocation().x, player.getSpawnLocation().y);
@@ -56,6 +57,9 @@ public class World {
 		
 		for (Gate g : gates)
 			g.update(deltaTime);
+		
+		for(ItemSprite s: items)
+			s.update(deltaTime);
 
 		// Update all sprites
 		player.update(deltaTime);
@@ -80,21 +84,34 @@ public class World {
 		for (MovingPlatform p : platforms)
 			rects.add(new WorldRectangle(p.getBoundingRectangle(), WorldRectangle.MOVING_PLATFORM, p));
 		for(MovableMapObject o : movableMapObjects)
-			rects.add(new WorldRectangle(o.getBoundingRectangle(), WorldRectangle.MOVABLE_MAP_OBJECT, o));
+			rects.add(new WorldRectangle(o.getBoundingRectangle(), o.id, o));
 		for (Gate g : gates)
-			rects.add(new WorldRectangle(g.getCollisionBox(), WorldRectangle.GATE, g));
+			rects.add(new WorldRectangle(g.getBoundingRectangle(), WorldRectangle.GATE, g));
 		for (Enemy e : enemies) {
-			e.setPosition(resolveMapCollisions(rects, e));
+			e.setPosition(resolveMapCollisions(rects, e, deltaTime));
 		}
 		for (Enemy e : enemies) {
-			Rectangle r = e.getBoundingRectangle();
+			int id = e instanceof Devil ? WorldRectangle.BOSS : WorldRectangle.ENEMY;
+			Rectangle r = null;
+			if(e instanceof Devil)
+				r = ((Devil) e).getPlayerCollisionRectangle();
+			else
+				r = e.getBoundingRectangle();
 			r.x /= Constants.TILE_SIZE;
 			r.y /= Constants.TILE_SIZE;
 			r.width /= Constants.TILE_SIZE;
 			r.height /= Constants.TILE_SIZE;
-			rects.add(new WorldRectangle(r, WorldRectangle.ENEMY, e));
+			rects.add(new WorldRectangle(r, id, e));
+			if(e instanceof Devil) {
+				WorldRectangle wr = new WorldRectangle(((Devil) e).getWeaponHitbox(), WorldRectangle.ENEMY, e);
+				wr.x /= Constants.TILE_SIZE;
+				wr.y /= Constants.TILE_SIZE;
+				wr.width /= Constants.TILE_SIZE;
+				wr.height /= Constants.TILE_SIZE;
+				rects.add(wr);
+			}
 		}
-		player.setPosition(resolveMapCollisions(rects, player));
+		player.setPosition(resolveMapCollisions(rects, player, deltaTime));
 
 	}
 
@@ -120,6 +137,13 @@ public class World {
 		platforms = new ArrayList<MovingPlatform>();
 		enemies = new ArrayList<Enemy>();
 		movableMapObjects = new ArrayList<MovableMapObject>();
+		items = new ArrayList<ItemSprite>();
+		if(Assets.instance.songs.currentSong != Assets.instance.songs.trackTwo) {
+			Assets.instance.songs.currentSong.stop();
+			Assets.instance.songs.trackTwo.setPosition(0);
+			Assets.instance.songs.trackTwo.play();
+			Assets.instance.songs.currentSong = Assets.instance.songs.trackTwo;
+		}
 		
 		int health = player.getHealth();
 		player = new Player(this);
@@ -130,6 +154,34 @@ public class World {
 		if(!b)
 			player.health = health;
 		
+		//TODO: finish chests
+		
+		if (map.getLayers().get("Chests") != null) {
+			/*for (MapObject obj : map.getLayers().get("Chests").getObjects()) {
+				try {
+					chests.add(new Chest((RectangleMapObject) obj, this));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}*/
+			map.getLayers().remove(map.getLayers().getIndex("Chests"));
+		}
+		
+		if (map.getLayers().get("Items") != null) {
+			for (MapObject obj : map.getLayers().get("Items").getObjects()) {
+				try {
+					float x = (Float)obj.getProperties().get("x");
+					float y = (Float)obj.getProperties().get("y");
+					items.add(new ItemSprite(x, y, Integer.valueOf((String)obj.getProperties().get("mapId"))));
+					if(obj.getProperties().get("script") != null)
+						items.get(items.size() - 1).setScriptAction(ScriptAction.loadScript(Gdx.files.internal("scripts/" + obj.getProperties().get("script") + ".txt").readString(), this));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			map.getLayers().remove(map.getLayers().getIndex("Items"));
+		}
+		
 		if (map.getLayers().get("Mobs") != null) {
 			TiledMapTileLayer tileLayer = (TiledMapTileLayer) map.getLayers().get("Mobs");
 			for (int x = 0; x < tileLayer.getWidth(); x++)
@@ -138,6 +190,16 @@ public class World {
 						switch (tileLayer.getCell(x, y).getTile().getId()) {
 						case 178:
 							enemies.add(new Skeleton(x, y, player));
+							if(tileLayer.getCell(x, y).getTile().getProperties().get("script") != null) {
+								try {
+									enemies.get(enemies.size() - 1).addScriptAction(ScriptAction.loadScript(Gdx.files.internal("scripts/" + (String) tileLayer.getCell(x, y).getTile().getProperties().get("script") + ".txt").readString(), this));
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+							break;
+						case 180:
+							enemies.add(new Devil(x, y, player));
 							if(tileLayer.getCell(x, y).getTile().getProperties().get("script") != null) {
 								try {
 									enemies.get(enemies.size() - 1).addScriptAction(ScriptAction.loadScript(Gdx.files.internal("scripts/" + (String) tileLayer.getCell(x, y).getTile().getProperties().get("script") + ".txt").readString(), this));
@@ -172,6 +234,11 @@ public class World {
 			}
 			map.getLayers().remove(map.getLayers().getIndex("Moving Walls"));
 		}
+		
+		for(MovableMapObject o1: movableMapObjects)
+			for(MovableMapObject o2: movableMapObjects)
+				if(o1 != o2 && o1.scriptId == o2.scriptId)
+					throw new IllegalArgumentException("Two map objects have the same scriptId.");
 		if (map.getLayers().get("Gate") != null) {
 			for (MapObject obj : map.getLayers().get("Gate").getObjects()) {
 				try {
@@ -214,7 +281,7 @@ public class World {
 		return map;
 	}
 
-	public Vector2 resolveMapCollisions(HashSet<WorldRectangle> rects, GameSprite s) {
+	public Vector2 resolveMapCollisions(HashSet<WorldRectangle> rects, GameSprite s, float deltaTime) {
 		Rectangle p = s.getBoundingRectangle();
 		boolean falling = true;
 		int prevState = s.getState();
@@ -228,8 +295,8 @@ public class World {
 			if (r.x < p.x + p.width + s.velocity.x && r.x + r.width > p.x + s.velocity.x
 					&& r.y < p.y + p.height + s.velocity.y && r.height + r.y > p.y + s.velocity.y) {
 				
-				//Collide with anything except Gate objects
-				if (r.id == WorldRectangle.GATE) {
+				//Collide with anything except Gate objects or moving ladders
+				if (r.id == WorldRectangle.GATE && s instanceof Player) {
 					((Gate)r.getParent()).collide = true;
 					if(((Gate)r.getParent()).open() && Gdx.input.isKeyPressed(Keys.S)) {
 						String destination = ((Gate)r.getParent()).getDestination();
@@ -240,9 +307,9 @@ public class World {
 						}
 						setMap("maps/" + ((Gate)r.getParent()).getMap() + ".tmx", t);
 					}
-				} else {
+				} else if(r.id != WorldRectangle.LADDER_MOVABLE_MAP_OBJECT){
 					if (r.id == WorldRectangle.ENEMY)
-						player.hit(r, ((Enemy) r.getParent()).getDamage());
+						player.hit(r, ((Enemy) r.getParent()).getDamage(), ((Enemy) r.getParent()).getDamage() * 0.5f);
 
 					// R is bellow player
 					if (p.contains(r.x - s.velocity.x, r.y + r.height - s.velocity.y)
@@ -260,9 +327,9 @@ public class World {
 								p.y = plat.getBoundingRectangle().y + plat.getBoundingRectangle().height;
 								s.velocity.y = 0;
 								p.y *= Constants.TILE_SIZE;
-								player.setState(Player.IDLE);
+								s.setState(GameSprite.IDLE);
 								Vector2 v = new Vector2(p.x + s.velocity.x, p.y + s.velocity.y);
-								s.velocity.y = -plat.getSpeed() * deltaTime * 1.0004f;
+								s.velocity.y = -plat.getSpeed() * deltaTime * 1.004f;
 								return v;
 							}
 						}
@@ -311,7 +378,7 @@ public class World {
 									p.y *= Constants.TILE_SIZE;
 									player.setState(Player.IDLE);
 									Vector2 v = new Vector2(p.x + s.velocity.x, p.y + s.velocity.y);
-									s.velocity.y = -plat.getSpeed() * deltaTime * 1.0004f;
+									s.velocity.y = -plat.getSpeed() * deltaTime * 1.004f;
 									return v;
 								}
 							}
@@ -378,7 +445,7 @@ public class World {
 									p.y *= Constants.TILE_SIZE;
 									player.setState(Player.IDLE);
 									Vector2 v = new Vector2(p.x + s.velocity.x, p.y + s.velocity.y);
-									s.velocity.y = -plat.getSpeed() * deltaTime * 1.0004f;
+									s.velocity.y = -plat.getSpeed() * deltaTime * 1.004f;
 									return v;
 								}
 							}
@@ -406,11 +473,16 @@ public class World {
 	// enemies, and if so calls the enemy's hit method
 	// and returns true. else returns false.
 	public boolean attack(int type, float range, int damage) {
+		Rectangle weaponHitbox = new Rectangle(player.getX() + player.getWidth(), player.getY() + player.getHeight() * 0.3f, range, player.getHeight() * 0.6f);
+		if(!player.right)
+			weaponHitbox.x = player.getX() - weaponHitbox.width;
 		for (Enemy e : enemies) {
-			if (player.getX() + player.getWidth() <= e.getX() && player.dist(e) <= range && player.right)
-				return e.hit(player.getBoundingRectangle(), damage);
-			else if (e.getX() + e.getWidth() <= player.getX() && player.dist(e) <= range && !player.right)
-				return e.hit(player.getBoundingRectangle(), damage);
+			if(e instanceof Devil)  {
+				if(weaponHitbox.overlaps(((Devil) e).getPlayerCollisionRectangle()))
+					return e.hit(player.getBoundingRectangle(), damage, damage * 0.3f);
+			}
+			else if (weaponHitbox.overlaps(e.getBoundingRectangle()))
+				return e.hit(player.getBoundingRectangle(), damage, damage * 0.3f);
 		}
 		return false;
 	}
@@ -418,6 +490,10 @@ public class World {
 	public HashSet<Rectangle> getRects() {
 		HashSet<Rectangle> rects = new HashSet<Rectangle>();
 		rects.add(player.getBoundingRectangle());
+		Rectangle weaponHitbox = new Rectangle(player.getX() + player.getWidth(), player.getY() + player.getHeight() * 0.3f, player.getInventory().getWeapon().getRange(), player.getHeight() * 0.6f);
+		if(!player.right)
+			weaponHitbox.x = player.getX() - weaponHitbox.width;
+		rects.add(weaponHitbox);
 		for (MapObject obj : map.getLayers().get(0).getObjects()) {
 			Rectangle r = new Rectangle(((RectangleMapObject) obj).getRectangle());
 			Rectangle re = new Rectangle(r.x * Constants.TILE_SIZE, r.y * Constants.TILE_SIZE,
@@ -425,7 +501,36 @@ public class World {
 			rects.add(new Rectangle(re));
 		}
 		for (Enemy e : enemies) {
-			Rectangle r = e.getBoundingRectangle();
+			if(!(e instanceof Devil)) {
+				Rectangle r = e.getBoundingRectangle();
+				rects.add(r);
+			} else {
+				rects.add(((Devil) e).getPlayerCollisionRectangle());
+				rects.add(((Devil)e).getWeaponHitbox());
+			}
+		}
+		for(MovableMapObject m : movableMapObjects) {
+			Rectangle r = m.getBoundingRectangle();
+			r.x *= Constants.TILE_SIZE;
+			r.y *= Constants.TILE_SIZE;
+			r.width *= Constants.TILE_SIZE;
+			r.height *= Constants.TILE_SIZE;
+			rects.add(r);
+		}
+		for(Gate g : gates) {
+			Rectangle r = g.getBoundingRectangle();
+			r.x *= Constants.TILE_SIZE;
+			r.y *= Constants.TILE_SIZE;
+			r.width *= Constants.TILE_SIZE;
+			r.height *= Constants.TILE_SIZE;
+			rects.add(r);
+		}
+		for(MovingPlatform p : platforms) {
+			Rectangle r = p.getBoundingRectangle();
+			r.x *= Constants.TILE_SIZE;
+			r.y *= Constants.TILE_SIZE;
+			r.width *= Constants.TILE_SIZE;
+			r.height *= Constants.TILE_SIZE;
 			rects.add(r);
 		}
 		return rects;
@@ -434,13 +539,30 @@ public class World {
 	public ArrayList<MovingPlatform> getMovingPlatforms() {
 		return platforms;
 	}
+	
+	/**
+	 * @return
+	 * @uml.property  name="renderer"
+	 */
+	public Renderer getRenderer() {
+		return renderer;
+	}
 
 	public ArrayList<Gate> getGates() {
 		return gates;
 	}
 	
+	/**
+	 * @param r
+	 * @uml.property  name="renderer"
+	 */
 	public void setRenderer(Renderer r) {
 		renderer = r;
 	}
+	
+	public ArrayList<ItemSprite> getItems() {
+		return items;
+	}
+	
 
 }

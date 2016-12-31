@@ -14,7 +14,6 @@ public class GameMenu extends Window implements Menuable, Menu {
 
 	private Skin skin;
 	private Menuable parent;
-
 	private OptionsWindow options;
 
 	public GameMenu(Skin skin, Menuable parent, OptionsWindow options) {
@@ -101,7 +100,7 @@ public class GameMenu extends Window implements Menuable, Menu {
 		this.parent = parent;
 	}
 
-	// Called when a Menu this contains is closed
+	// Called when a Menu this contains is closed (normally the OptionsMenu)
 	@Override
 	public void onClose(Window window) {
 		if (window == options) {

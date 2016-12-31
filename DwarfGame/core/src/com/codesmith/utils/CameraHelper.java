@@ -9,10 +9,29 @@ import com.codesmith.world.World;
 public class CameraHelper {
 	private static final String TAG = CameraHelper.class.getName();
 
+	/**
+	 * @uml.property  name="position"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	private Vector2 position;
+	/**
+	 * @uml.property  name="zoom"
+	 */
 	private float zoom;
+	/**
+	 * @uml.property  name="target"
+	 * @uml.associationEnd  
+	 */
 	private Sprite target;
+	/**
+	 * @uml.property  name="camera"
+	 * @uml.associationEnd  
+	 */
 	private OrthographicCamera camera;
+	/**
+	 * @uml.property  name="world"
+	 * @uml.associationEnd  
+	 */
 	private World world;
 
 	public CameraHelper() {
@@ -20,6 +39,11 @@ public class CameraHelper {
 		zoom = Constants.SITTING_ZOOM;
 	}
 	
+	/**
+	 * @param camera
+	 * @param world
+	 * @uml.property  name="camera"
+	 */
 	public void setCamera(OrthographicCamera camera, World world) {
 		this.camera = camera;
 		this.world = world;
@@ -47,6 +71,10 @@ public class CameraHelper {
 		this.position.set(x, y);
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="position"
+	 */
 	public Vector2 getPosition() {
 		return position;
 	}
@@ -55,18 +83,34 @@ public class CameraHelper {
 		setZoom(zoom + amount);
 	}
 
+	/**
+	 * @param zoom
+	 * @uml.property  name="zoom"
+	 */
 	public void setZoom(float zoom) {
 		this.zoom = MathUtils.clamp(zoom, Constants.MIN_ZOOM, Constants.MAX_ZOOM);
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="zoom"
+	 */
 	public float getZoom() {
 		return zoom;
 	}
 
+	/**
+	 * @param target
+	 * @uml.property  name="target"
+	 */
 	public void setTarget(Sprite target) {
 		this.target = target;
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="target"
+	 */
 	public Sprite getTarget() {
 		return target;
 	}
@@ -84,14 +128,15 @@ public class CameraHelper {
 		camera.position.x = position.x;
 		camera.position.y = position.y;
 
-		float lowerX = camera.viewportWidth / 2;
-		float upperX = world.getMap().getProperties().get("width", Integer.class) * Constants.TILE_SIZE * Constants.TILE_SIZE_PIXELS - camera.viewportWidth / 2;
+		try {
+			float lowerX = camera.viewportWidth / 2;
+			float upperX = world.getMap().getProperties().get("width", Integer.class) * Constants.TILE_SIZE * Constants.TILE_SIZE_PIXELS - camera.viewportWidth / 2;
 		
-		camera.zoom = zoom;
+			camera.zoom = zoom;
 		
-		camera.position.x = MathUtils.clamp(camera.position.x, lowerX, upperX);
-		camera.position.y = MathUtils.clamp(camera.position.y, camera.viewportHeight / 2, world.getMap().getProperties().get("height", Integer.class) * Constants.TILE_SIZE * Constants.TILE_SIZE_PIXELS - camera.viewportHeight / 2);
-		
+			camera.position.x = MathUtils.clamp(camera.position.x, lowerX, upperX);
+			camera.position.y = MathUtils.clamp(camera.position.y, camera.viewportHeight / 2, world.getMap().getProperties().get("height", Integer.class) * Constants.TILE_SIZE * Constants.TILE_SIZE_PIXELS - camera.viewportHeight / 2);
+		} catch(Exception e) {}
 		camera.update();
 	}
 	
