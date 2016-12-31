@@ -7,6 +7,9 @@ import com.codesmith.world.Player;
 
 public class JumpAction extends ScriptAction {
 	
+	/**
+	 * @uml.property  name="vel"
+	 */
 	private float vel;
 	
 	public JumpAction(float vel) {

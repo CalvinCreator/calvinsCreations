@@ -1,8 +1,10 @@
 <proximityAction>
 	<P,25>
 <moveAction>
-	<0,40,1>
+	<0,40,1.2>
 <moveAction>
-	<0,0,1>
+	<0,0,1.6>
 <moveAction>
-	<0,-40,1>
+	<0,-40,1.2>
+<musicChangeAction>
+	<3>

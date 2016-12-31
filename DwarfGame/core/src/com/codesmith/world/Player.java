@@ -13,7 +13,8 @@ import com.codesmith.graphics.AnimationManager;
 import com.codesmith.graphics.Assets;
 import com.codesmith.graphics.VectorAnimation;
 import com.codesmith.scripting.ProximityAction;
-import com.codesmith.scripting.TempAction;
+import com.codesmith.scripting.Updatable;
+import com.codesmith.scripting.Updatable;
 import com.codesmith.utils.Constants;
 import com.codesmith.utils.GamePreferences;
 
@@ -21,16 +22,13 @@ public class Player extends GameSprite {
 	public static final String TAG = Player.class.getName();
 
 	private float stunnedCounter = 0;
-
 	private AnimationManager aManager;
-
 	private Inventory inventory;
-
 	private World world;
 
 	private Vector2 spawnLocation;
 	private String spawnMap;
-	private long lastAttack = 0;
+	private long lastAttack = 0;	
 	private float attackCooldown = 0.3f;
 
 	public Player(World world) {
@@ -43,7 +41,7 @@ public class Player extends GameSprite {
 		this.world = world;
 		maxHealth = health = 4;
 		spawnLocation = new Vector2(4, 3);
-		spawnMap = "maps/map1Map.tmx";
+		spawnMap = "maps/map1.tmx";
 		inventory = new Inventory();
 		inventory.setWeapon(new Weapon(0));
 
@@ -72,8 +70,8 @@ public class Player extends GameSprite {
 		if (stunnedCounter > 0)
 			stunnedCounter -= deltaTime;
 		if(getY() < 0)
-			hit(new Rectangle(0, 0, 1, 1), 1);
-		if(action == null || (action instanceof ProximityAction) || (action instanceof TempAction)) {
+			hit(new Rectangle(0, 0, 1, 1), 1, 0);
+		if(action == null || (action instanceof ProximityAction) || (action instanceof Updatable)) {
 			resolveInput(deltaTime);
 			velocity.x += acceleration.x * deltaTime;
 			if (currentState != CLIMBING) {
@@ -83,7 +81,7 @@ public class Player extends GameSprite {
 				velocity.y = MathUtils.clamp(velocity.y, -Constants.PLAYER_MOVE_SPEED * deltaTime,
 						Constants.PLAYER_MOVE_SPEED * deltaTime);
 			}
-			if(action instanceof ProximityAction || action instanceof TempAction) {
+			if(action instanceof ProximityAction || action instanceof Updatable) {
 				action = action.execute(this, deltaTime);
 			}
 		} else {
@@ -96,6 +94,7 @@ public class Player extends GameSprite {
 	}
 
 	public void draw(SpriteBatch batch) {
+		setAlpha(batch.getColor().a);
 		this.setRegion(aManager.getKeyFrame());
 		super.flip(!right, false);
 		super.draw(batch);
@@ -108,7 +107,7 @@ public class Player extends GameSprite {
 	}
 
 	@Override
-	public boolean hit(Rectangle r, int damage) {
+	public boolean hit(Rectangle r, int damage, float magnitude) {
 		if (stunnedCounter <= 0) {
 			aManager.setAnimation("hit", 0, false);
 			health -= damage;
@@ -116,9 +115,9 @@ public class Player extends GameSprite {
 			if(getY() > 0)
 				velocity.y = Constants.PLAYER_JUMP_SPEED / 2;
 			if (getX() + getWidth() / 2 < r.x + r.width / 2)
-				velocity.x = -0.5f;
+				velocity.x = -magnitude;
 			else
-				velocity.x = 0.5f;
+				velocity.x = magnitude;
 
 			int i = GamePreferences.instance.sound ? 1 : 0;
 			Assets.instance.songs.hit.play(i * GamePreferences.instance.volSound);
@@ -185,7 +184,7 @@ public class Player extends GameSprite {
 				if (getState() != CLIMBING)
 					velocity.y = Constants.PLAYER_JUMP_SPEED;
 			}
-			// int prevState = currentState;
+			
 			if (onLadder()) {
 				if (Gdx.input.isKeyPressed(Keys.W)) {
 					velocity.y = Constants.PLAYER_MOVE_SPEED * deltaTime;
@@ -219,11 +218,21 @@ public class Player extends GameSprite {
 					}
 				}
 			}
+		for(MovableMapObject o : world.getMovableMapObjects())
+			if(o.id == WorldRectangle.LADDER_MOVABLE_MAP_OBJECT) {
+				Rectangle r = o.getBoundingRectangle();
+				r.x *= Constants.TILE_SIZE;
+				r.y *= Constants.TILE_SIZE;
+				r.width *= Constants.TILE_SIZE;
+				r.height *= Constants.TILE_SIZE;
+				if(r.overlaps(getBoundingRectangle()))
+					return true;
+			}
 		return false;
 	}
 
 	public void keyUp(int keycode) {
-		if(action == null || (action instanceof ProximityAction) || (action instanceof TempAction)) {
+		if(action == null || (action instanceof ProximityAction) || (action instanceof Updatable)) {
 			if (keycode == Keys.A) {
 				if (!Gdx.input.isButtonPressed(Keys.D) && getState() == RUNNING)
 					setState(IDLE);
@@ -240,31 +249,53 @@ public class Player extends GameSprite {
 		super.setPosition((x - 1) * Constants.TILE_SIZE_PIXELS * Constants.TILE_SIZE,
 				(y - 1) * Constants.TILE_SIZE_PIXELS * Constants.TILE_SIZE);
 	}
+	
+	/**
+	 * @return
+	 * @uml.property  name="inventory"
+	 */
+	public Inventory getInventory() {
+		return inventory;
+	}
 
+	/**
+	 * @return
+	 * @uml.property  name="spawnMap"
+	 */
 	public String getSpawnMap() {
 		return spawnMap;
 	}
 	
+	/**
+	 * @return
+	 * @uml.property  name="spawnLocation"
+	 */
 	public Vector2 getSpawnLocation() {
 		return spawnLocation;
 	}
 	
+	/**
+	 * @param s
+	 * @uml.property  name="spawnMap"
+	 */
 	public void setSpawnMap(String s) {
 		spawnMap = s;
 	}
 	
+	/**
+	 * @param pos
+	 * @uml.property  name="spawnLocation"
+	 */
 	public void setSpawnLocation(Vector2 pos) {
 		spawnLocation = pos;
 	}
 	
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if ((System.currentTimeMillis() - lastAttack) / 1000f > attackCooldown && (action == null || (action instanceof TempAction) ||(action instanceof ProximityAction))) {
+		if ((System.currentTimeMillis() - lastAttack) / 1000f > attackCooldown && (action == null || (action instanceof Updatable) ||(action instanceof ProximityAction))) {
 			aManager.setAnimation("slash", 0, false);
 			if (currentState == CLIMBING) {
 				setState(IDLE); // climbing doesn't support setting the state to
 								// FALLING
-
-				world.attack(0, inventory.getWeapon().getRange(), inventory.attack());
 			} else {
 				if (world.attack(0, inventory.getWeapon().getRange(), inventory.attack())) {
 					int i = GamePreferences.instance.sound ? 1 : 0;

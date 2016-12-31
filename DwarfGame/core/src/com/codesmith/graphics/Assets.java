@@ -11,6 +11,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -20,12 +21,15 @@ public class Assets implements Disposable, AssetErrorListener {
 	public static final Assets instance = new Assets();
 	private AssetManager assetManager;
 
-	public CharacterAssets gameAssets;
+	public GameAssets gameAssets;
 	public MapAssets mapAssets;
 	public ParticleAnimations pAnimations;
 	public Icons icons;
 	public Songs songs;
-	public TextureAtlas menuAssets, backgrounds;
+	public TextureAtlas menuAssets;
+
+	public TextureAtlas backgrounds;
+	public TextureRegion credits;
 
 	private Assets() {
 	}
@@ -45,7 +49,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		TextureAtlas atlas = assetManager.get("images/sprites.pack");
 		for (Texture t : atlas.getTextures())
 			t.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		gameAssets = new CharacterAssets(atlas);
+		gameAssets = new GameAssets(atlas);
 		Gdx.app.log(TAG, "sprites.pack loaded.");
 		
 		TextureAtlas bAtlas = assetManager.get("images/backgrounds.pack");
@@ -71,7 +75,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		for (Texture t : atlas.getTextures())
 			t.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		mapAssets = new MapAssets(atlas);
-		Gdx.app.log(TAG, "tileset loaded.");
+		Gdx.app.log(TAG, "map.pack loaded.");
 		
 		atlas = assetManager.get("menuImages/menuAssets.pack");
 		for (Texture t : atlas.getTextures())
@@ -81,16 +85,21 @@ public class Assets implements Disposable, AssetErrorListener {
 		
 		assetManager.load("music/trackOne.mp3", Music.class);
 		assetManager.load("music/trackTwo.mp3", Music.class);
+		assetManager.load("music/trackThree.mp3", Music.class);
+		assetManager.load("music/trackFour.mp3", Music.class);
 		assetManager.finishLoading();
-		Music[] songs = {assetManager.get("music/trackOne.mp3"), assetManager.get("music/trackTwo.mp3")};
+		Music[] songs = {assetManager.get("music/trackOne.mp3"), assetManager.get("music/trackTwo.mp3"), assetManager.get("music/trackThree.mp3"), assetManager.get("music/trackFour.mp3")};
 		this.songs = new Songs(songs);
 		Gdx.app.log(TAG, "music loaded.");
+		
+		credits = new TextureRegion(new Texture("images/credits.png"));
 
 	}
 
 	@Override
 	public void dispose() {
 		assetManager.dispose();
+		credits.getTexture().dispose();
 	}
 
 	@Override
@@ -99,7 +108,14 @@ public class Assets implements Disposable, AssetErrorListener {
 	}
 
 	public class MapAssets {
-		public final AtlasRegion thinBlueLeft, thinBlueMiddle, thinBlueRight, thinBlueUp, thinBlueVerticalMiddle;
+		public final AtlasRegion thinBlueLeft;
+		public final AtlasRegion thinBlueMiddle;
+		public final AtlasRegion thinBlueRight;
+		public final AtlasRegion thinBlueUp;
+		public final AtlasRegion thinBlueVerticalMiddle;
+		public final AtlasRegion ladderBottom;
+		public final AtlasRegion ladderTop;
+		public final AtlasRegion ladderMiddle;
 		
 		public MapAssets(TextureAtlas atlas) {
 			thinBlueLeft = atlas.findRegion("70");
@@ -107,13 +123,43 @@ public class Assets implements Disposable, AssetErrorListener {
 			thinBlueRight = atlas.findRegion("72");
 			thinBlueUp = atlas.findRegion("61");
 			thinBlueVerticalMiddle = atlas.findRegion("62");
+			ladderBottom = atlas.findRegion("98");
+			ladderTop = atlas.findRegion("76");
+			ladderMiddle = atlas.findRegion("87");
 		}
 	}
 	
-	public class CharacterAssets {
-		public final AtlasRegion run1, run2, run3, run4, jump1, jump2, jump3, jump4, hit1, hit2, slash1, slash2, slash3, climb1, climb2, climb3, climb4, skeletonWalk1, skeletonWalk2, skeletonWalk3;
+	public class GameAssets {
+		public final AtlasRegion run1;
+		public final AtlasRegion run2;
+		public final AtlasRegion run3;
+		public final AtlasRegion run4;
+		public final AtlasRegion jump1;
+		public final AtlasRegion jump2;
+		public final AtlasRegion jump3;
+		public final AtlasRegion jump4;
+		public final AtlasRegion hit1;
+		public final AtlasRegion hit2;
+		public final AtlasRegion slash1;
+		public final AtlasRegion slash2;
+		public final AtlasRegion slash3;
+		public final AtlasRegion climb1;
+		public final AtlasRegion climb2;
+		public final AtlasRegion climb3;
+		public final AtlasRegion climb4;
+		public final AtlasRegion skeletonWalk1;
+		public final AtlasRegion skeletonWalk2;
+		public final AtlasRegion skeletonWalk3;
+		public final AtlasRegion devilWalk1;
+		public final AtlasRegion devilWalk2;
+		public final AtlasRegion devilWalk3;
+		public final AtlasRegion devilWalk4;
+		public final AtlasRegion devilAttack1;
+		public final AtlasRegion devilAttack2;
+		public final AtlasRegion devilAttack3;
+		public final AtlasRegion devilAttack4;
 
-		public CharacterAssets(TextureAtlas atlas) {
+		public GameAssets(TextureAtlas atlas) {
 			run1 = atlas.findRegion("dwarfRun1");
 			run2 = atlas.findRegion("dwarfRun2");
 			run3 = atlas.findRegion("dwarfRun3");
@@ -134,13 +180,42 @@ public class Assets implements Disposable, AssetErrorListener {
 			skeletonWalk1 = atlas.findRegion("skeletonWalk1");
 			skeletonWalk2 = atlas.findRegion("skeletonWalk2");
 			skeletonWalk3 = atlas.findRegion("skeletonWalk3");
+			devilWalk1 = atlas.findRegion("devilWalk1");
+			devilWalk2 = atlas.findRegion("devilWalk2");
+			devilWalk3 = atlas.findRegion("devilWalk3");
+			devilWalk4 = atlas.findRegion("devilWalk4");
+			devilAttack1 = atlas.findRegion("devilAttack1");
+			devilAttack2 = atlas.findRegion("devilAttack2");
+			devilAttack3 = atlas.findRegion("devilAttack3");
+			devilAttack4 = atlas.findRegion("devilAttack4");
 		}
 	}
 	
 	public class ParticleAnimations {
 		
-		public final AtlasRegion death1, death2, death3, death4, death5, death6, death7, death8, death9, death10, death11, death12, death13,
-		death14, death15, death16, death17, death18, death19, death20, death21, death22, death23;
+		public final AtlasRegion death1;
+		public final AtlasRegion death2;
+		public final AtlasRegion death3;
+		public final AtlasRegion death4;
+		public final AtlasRegion death5;
+		public final AtlasRegion death6;
+		public final AtlasRegion death7;
+		public final AtlasRegion death8;
+		public final AtlasRegion death9;
+		public final AtlasRegion death10;
+		public final AtlasRegion death11;
+		public final AtlasRegion death12;
+		public final AtlasRegion death13;
+		public final AtlasRegion death14;
+		public final AtlasRegion death15;
+		public final AtlasRegion death16;
+		public final AtlasRegion death17;
+		public final AtlasRegion death18;
+		public final AtlasRegion death19;
+		public final AtlasRegion death20;
+		public final AtlasRegion death21;
+		public final AtlasRegion death22;
+		public final AtlasRegion death23;
 		
 		public ParticleAnimations(TextureAtlas atlas) {
 			death1 = atlas.findRegion("death8");
@@ -171,10 +246,57 @@ public class Assets implements Disposable, AssetErrorListener {
 	}
 	
 	public class Icons {
-		public final AtlasRegion amethyst, axe1, axe2, axe3, axe4, axe5, blackBar, blackDagger, blueBar, copperBar, diamond, 
-		emerald, emptyHeart, fullHeart, greenBar, mace1, mace2, platinumBar, redCoin, ruby, saphire, shortSword, silverBar, spear, sword1, sword2, 
-		sword3, sword4, sword5, sword6, sword7, sword8, sword9, sword10, sword11, sword12, sword13, sword14, 
-		sword15, sword16, wand1, wand2, wand3, warhammer1, warhammer2, warhammer3, warhammer4, gate1, gate2, gate3, gate4;
+		public final AtlasRegion amethyst;
+		public final AtlasRegion axe1;
+		public final AtlasRegion axe2;
+		public final AtlasRegion axe3;
+		public final AtlasRegion axe4;
+		public final AtlasRegion axe5;
+		public final AtlasRegion blackBar;
+		public final AtlasRegion blackDagger;
+		public final AtlasRegion blueBar;
+		public final AtlasRegion copperBar;
+		public final AtlasRegion diamond;
+		public final AtlasRegion emerald;
+		public final AtlasRegion emptyHeart;
+		public final AtlasRegion fullHeart;
+		public final AtlasRegion greenBar;
+		public final AtlasRegion mace1;
+		public final AtlasRegion mace2;
+		public final AtlasRegion platinumBar;
+		public final AtlasRegion redCoin;
+		public final AtlasRegion ruby;
+		public final AtlasRegion saphire;
+		public final AtlasRegion shortSword;
+		public final AtlasRegion silverBar;
+		public final AtlasRegion spear;
+		public final AtlasRegion sword1;
+		public final AtlasRegion sword2;
+		public final AtlasRegion sword3;
+		public final AtlasRegion sword4;
+		public final AtlasRegion sword5;
+		public final AtlasRegion sword6;
+		public final AtlasRegion sword7;
+		public final AtlasRegion sword8;
+		public final AtlasRegion sword9;
+		public final AtlasRegion sword10;
+		public final AtlasRegion sword11;
+		public final AtlasRegion sword12;
+		public final AtlasRegion sword13;
+		public final AtlasRegion sword14;
+		public final AtlasRegion sword15;
+		public final AtlasRegion sword16;
+		public final AtlasRegion wand1;
+		public final AtlasRegion wand2;
+		public final AtlasRegion wand3;
+		public final AtlasRegion warhammer1;
+		public final AtlasRegion warhammer2;
+		public final AtlasRegion warhammer3;
+		public final AtlasRegion warhammer4;
+		public final AtlasRegion gate1;
+		public final AtlasRegion gate2;
+		public final AtlasRegion gate3;
+		public final AtlasRegion gate4;
 		public Icons(TextureAtlas atlas) {
 			amethyst = atlas.findRegion("amethyst");
 			axe1 = atlas.findRegion("axe1");
@@ -231,27 +353,42 @@ public class Assets implements Disposable, AssetErrorListener {
 	}
 
 	public class Songs {
-		public final Music trackOne, trackTwo;
-		public final Sound swordHit, hit, swoosh;
+		public final Music trackOne;
+		public final Music trackTwo;
+		public final Music trackThree;
+		public final Music trackFour;
+		public final Sound swordHit;
+		public final Sound hit;
+		public final Sound swoosh;
+		public final Sound stoneScrape;
 		public final ArrayList<Music> allSongs;
 		public final ArrayList<Sound> allSounds;
+		
+		public Music currentSong;
 		
 		public Songs(Music[] songs) {
 			trackOne = songs[0];
 			trackTwo = songs[1];
+			trackThree = songs[2];
+			trackFour = songs[3];
 			swordHit = Gdx.audio.newSound(Gdx.files.internal("sounds/swordHit.mp3"));
 			hit  = Gdx.audio.newSound(Gdx.files.internal("sounds/hit.mp3"));
 			swoosh  = Gdx.audio.newSound(Gdx.files.internal("sounds/swoosh.mp3"));
+			stoneScrape = Gdx.audio.newSound(Gdx.files.internal("sounds/stoneScrape.mp3"));
 			
 			allSongs = new ArrayList<Music>();
 			allSongs.add(trackOne);
 			allSongs.add(trackTwo);
+			allSongs.add(trackThree);
+			allSongs.add(trackFour);
 			
 			allSounds = new ArrayList<Sound>();
 			allSounds.add(swordHit);
 			allSounds.add(hit);
 			allSounds.add(swoosh);
+			allSounds.add(stoneScrape);
 		}
+	
 	}
 
 }

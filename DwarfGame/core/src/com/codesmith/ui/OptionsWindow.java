@@ -18,14 +18,58 @@ import com.codesmith.utils.GamePreferences;
 
 public class OptionsWindow extends Window implements Menu {
 
+	/**
+	 * @uml.property  name="optionsSkin"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	private Skin optionsSkin;
 
-	private CheckBox chkSound, chkMusic;
-	private Slider sldSound, sldMusic;
+	/**
+	 * @uml.property  name="chkSound"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
+	private CheckBox chkSound;
 
-	private boolean prevSound, prevMusic;
-	private float prevSoundLvl, prevMusicLvl;
+	/**
+	 * @uml.property  name="chkMusic"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
+	private CheckBox chkMusic;
+	/**
+	 * @uml.property  name="sldSound"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
+	private Slider sldSound;
+
+	/**
+	 * @uml.property  name="sldMusic"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
+	private Slider sldMusic;
+
+	/**
+	 * @uml.property  name="prevSound"
+	 */
+	private boolean prevSound;
+
+	/**
+	 * @uml.property  name="prevMusic"
+	 */
+	private boolean prevMusic;
+	/**
+	 * @uml.property  name="prevSoundLvl"
+	 */
+	private float prevSoundLvl;
+
+	/**
+	 * @uml.property  name="prevMusicLvl"
+	 */
+	private float prevMusicLvl;
 	
+	/**
+	 * @uml.property  name="parent"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	private Menuable parent;
 
 	public OptionsWindow(Skin optionsSkin, Menuable parent) {
@@ -165,6 +209,10 @@ public class OptionsWindow extends Window implements Menu {
 		parent.onClose(this);
 	}
 	
+	/**
+	 * @param parent
+	 * @uml.property  name="parent"
+	 */
 	@Override
 	public void setParent(Menuable parent) {
 		this.parent = parent;

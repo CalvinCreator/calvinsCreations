@@ -1,0 +1,8 @@
+<deathAction>
+	<D>
+<musicChangeAction>
+	<4>
+<moveAction>
+	<0, -80, 0.4>
+<moveAction>
+	<0, -160, 3.5>

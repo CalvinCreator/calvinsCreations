@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.Vector2;
 public class AnimationManager {
 	
 	private HashMap<String, Animation> animations;
-	private Animation currentAnimation, previousAnimation;
-	
+	private Animation currentAnimation;
+	private Animation previousAnimation;
 	private float stateTime;
 	private boolean looping;
 	
