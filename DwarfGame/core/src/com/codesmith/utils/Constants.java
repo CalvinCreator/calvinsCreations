@@ -4,9 +4,9 @@ public class Constants {
 
 	public static final float PLAYER_HEIGHT = 6.5f;
 	public static final float PLAYER_MOVE_SPEED = 40f;
-	public static final float GRAVITY = 3f;
-	public static final float PLAYER_JUMP_SPEED = 1.65f;
-	public static final float PLAYER_MAX_SPEED = 3f;
+	public static final float GRAVITY = 4.5f;
+	public static final float PLAYER_JUMP_SPEED = 2.75f;
+	public static final float PLAYER_MAX_SPEED = 3.5f;
 	
 	public static final float VIEWPORT_WIDTH = 100f;
 	public static final float VIEWPORT_HEIGHT = 100f;
