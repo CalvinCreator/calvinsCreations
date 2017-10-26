@@ -1,7 +1,7 @@
 # calvinsCreations
 ## By Calvin Krist
 
-This is a reposity to contain many of the smaller personal projects of mine, especially the miscellaneous ones I created before coming to UVA. these projects are often experimental, poorly designed and documented, or just unfinished. Many of these projects require Java 8 or higher due to the use of lamba expressions.
+This is a reposity to contain many of the smaller personal projects of mine, especially the miscellaneous ones I created before coming to UVA. These projects are often experimental, poorly designed and documented, or just unfinished. Many of these projects require Java 8 or higher due to the use of lamba expressions.
 
 ### DwarfGame
 DwarfGame is a small platformer built using gradle and LibGDX. The graphics and sounds are all creative commons. The game currently only has a launcher for Windows (called DestopLauncher).
@@ -22,4 +22,4 @@ This project implenents a multiplayer specific version of Blackjack. Using the J
 Furthermore, each player has an account stored on the server which, in the future, will store their money for betting. Due to this, a login is required to play.
 
 #### Known Glitches:
-* When the players and the server are connecting through different WiFi networks, the server's port must be forwarded. This is difficult to achieve at universitys.
+* When the players and the server are connecting through different WiFi networks, the server's port must be forwarded. This is difficult to achieve at universities.
